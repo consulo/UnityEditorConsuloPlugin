@@ -9,8 +9,8 @@ namespace MustBe.Consulo.Internal
 {
 	public class ConsuloPlugin : MonoBehaviour
 	{
-		//private const int ourPort = 62242;
-		private const int ourPort = 55333; // dev port
+		private const int ourPort = 62242;
+		//private const int ourPort = 55333; // dev port
 		private const String ourEditorPrefsKey = "UseConsuloAsExternalEditor";
 
 		[MenuItem("Edit/Use Consulo as External Editor", true)]
