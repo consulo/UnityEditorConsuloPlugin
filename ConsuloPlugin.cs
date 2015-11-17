@@ -63,7 +63,8 @@ namespace MustBe.Consulo.Internal
 			request.Timeout = 5000;
 			request.Method = "POST";
 
-			projectPath.Replace('\\', '/');
+			projectPath = projectPath.Replace('\\', '/');
+			filePath = filePath.Replace('\\', '/');
 			String json = "{" +
 			"projectPath: \"" + projectPath + "\"," +
 			"filePath: \"" + filePath + "\"," +
