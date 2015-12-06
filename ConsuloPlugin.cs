@@ -7,11 +7,42 @@ using UnityEngine;
 
 namespace MustBe.Consulo.Internal
 {
+	/// <summary>
+	/// UnityEditor.Menu class is not exists in Unity 4.6 we need add some hack
+	/// </summary>
 	public class ConsuloPlugin : MonoBehaviour
 	{
-		private const int ourPort = 62242;
-		//private const int ourPort = 55333; // dev port
+		//private const int ourPort = 62242;
+		private const int ourPort = 55333; // dev port
 		private const String ourEditorPrefsKey = "UseConsuloAsExternalEditor";
+
+#if UNITY_BEFORE_5
+
+		[MenuItem("Edit/Use Consulo as External Editor", true)]
+		static bool UseConsuloAsExternalEditorValidator()
+		{
+			return !UseConsulo();
+		}
+
+		[MenuItem("Edit/Disable Consulo as External Editor", true)]
+		static bool DisableConsuloAsExternalEditorValidator()
+		{
+			return UseConsulo();
+		}
+
+		[MenuItem("Edit/Use Consulo as External Editor")]
+		static void UseConsuloAsExternalEditor()
+		{
+			EditorPrefs.SetBool(ourEditorPrefsKey, true);
+		}
+
+		[MenuItem("Edit/Disable Consulo as External Editor")]
+		static void DisableConsuloAsExternalEditor()
+		{
+			EditorPrefs.SetBool(ourEditorPrefsKey, false);
+		}
+
+#else
 
 		[MenuItem("Edit/Use Consulo as External Editor", true)]
 		static bool ValidateUncheckConsulo()
@@ -27,12 +58,7 @@ namespace MustBe.Consulo.Internal
 			Menu.SetChecked("Edit/Use Consulo as External Editor", !state);
 			EditorPrefs.SetBool(ourEditorPrefsKey, !state);
 		}
-
-		/*[MenuItem("File/Open Project in Consulo")]
-		static void OpenProjectInConsulo()
-		{
-			//TODO [VISTALL] open project
-		}*/
+#endif
 
 		static bool UseConsulo()
 		{
@@ -80,7 +106,7 @@ namespace MustBe.Consulo.Internal
 				stream.Write(bytes, 0, bytes.Length);
 			}
 
-			using(var requestGetResponse = request.GetResponse())
+			using (var requestGetResponse = request.GetResponse())
 			{
 				using (var responseStream = requestGetResponse.GetResponseStream())
 				{

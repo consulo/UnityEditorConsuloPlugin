@@ -2,11 +2,36 @@
 <project version="4">
   <component name="ModuleManager">
     <modules>
-      <module name="UnityEditorConsuloPlugin" dirurl="file://$PROJECT_DIR$" current-layer="Default">
+      <module name="UnityEditorConsuloPlugin" dirurl="file://$PROJECT_DIR$" current-layer="unity4.6">
         <module-layer name="Default">
           <extension id="mono-csharp" unsafe-code="false" language-version-module-name="" language-version-name="" optimize-code="false" platform="ANY_CPU" custom-compiler-sdk-module-name="" custom-compiler-sdk-name="" />
           <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0 (predefined)" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$.$TargetFileExt$" output-dir="$ModuleProductionOutputDirPath$" namespace-prefix="">
             <define>DEBUG</define>
+          </extension>
+          <content url="file://$MODULE_DIR$" />
+          <orderEntry type="sourceFolder" />
+          <orderEntry type="dot-net-library" name="System" />
+          <orderEntry type="dot-net-library" name="mscorlib" />
+          <orderEntry type="module-library">
+            <library>
+              <binaries>
+                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Lib/UnityEditor.dll!/" />
+              </binaries>
+            </library>
+          </orderEntry>
+          <orderEntry type="module-library">
+            <library>
+              <binaries>
+                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Lib/UnityEngine.dll!/" />
+              </binaries>
+            </library>
+          </orderEntry>
+        </module-layer>
+        <module-layer name="unity4.6">
+          <extension id="mono-csharp" unsafe-code="false" language-version-module-name="" language-version-name="" optimize-code="false" platform="ANY_CPU" custom-compiler-sdk-module-name="" custom-compiler-sdk-name="" />
+          <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0 (predefined)" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$4.6.$TargetFileExt$" output-dir="$ModuleProductionOutputDirPath$" namespace-prefix="">
+            <define>DEBUG</define>
+            <define>UNITY_BEFORE_5</define>
           </extension>
           <content url="file://$MODULE_DIR$" />
           <orderEntry type="sourceFolder" />
