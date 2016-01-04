@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ModuleManager">
     <modules>
-      <module name="UnityEditorConsuloPlugin" dirurl="file://$PROJECT_DIR$" current-layer="unity4.6">
+      <module name="UnityEditorConsuloPlugin" dirurl="file://$PROJECT_DIR$" current-layer="Default">
         <module-layer name="Default">
           <extension id="mono-csharp" unsafe-code="false" language-version-module-name="" language-version-name="" optimize-code="false" platform="ANY_CPU" custom-compiler-sdk-module-name="" custom-compiler-sdk-name="" />
           <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0 (predefined)" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$.$TargetFileExt$" output-dir="$ModuleProductionOutputDirPath$" namespace-prefix="">
