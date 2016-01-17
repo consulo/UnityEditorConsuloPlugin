@@ -12,7 +12,7 @@ namespace MustBe.Consulo.Internal
 	/// <summary>
 	/// UnityEditor.Menu class is not exists in Unity 4.6 we need add some hack
 	/// </summary>
-	public class ConsuloPlugin
+	public class ConsuloIntegration
 	{
 		//private const int ourPort = 62242;
 		private const int ourPort = 55333; // dev port
