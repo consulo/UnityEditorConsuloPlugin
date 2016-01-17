@@ -4,8 +4,6 @@ using UnityEditor;
 
 namespace MustBe.Consulo.Internal
 {
-	internal delegate void Action();
-
 	[InitializeOnLoad]
 	public class WebApiServer
 	{

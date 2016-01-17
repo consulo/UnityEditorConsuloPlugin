@@ -5,7 +5,9 @@ namespace MustBe.Consulo.Internal
 {
 	internal class UnityUtil
 	{
-		internal static void RunInMainThread(Action action)
+		internal delegate void VoidFunc();
+
+		internal static void RunInMainThread(VoidFunc action)
 		{
 			EditorApplication.CallbackFunction callback = null;
 			callback = () =>
