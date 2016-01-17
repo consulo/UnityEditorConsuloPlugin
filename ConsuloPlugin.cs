@@ -4,6 +4,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 namespace MustBe.Consulo.Internal
@@ -11,46 +12,46 @@ namespace MustBe.Consulo.Internal
 	/// <summary>
 	/// UnityEditor.Menu class is not exists in Unity 4.6 we need add some hack
 	/// </summary>
-	public class ConsuloPlugin : MonoBehaviour
+	public class ConsuloPlugin
 	{
-		private const int ourPort = 62242;
-		//private const int ourPort = 55333; // dev port
+		//private const int ourPort = 62242;
+		private const int ourPort = 55333; // dev port
 		private const String ourEditorPrefsKey = "UseConsuloAsExternalEditor";
 
 #if UNITY_BEFORE_5
 
-	[MenuItem("Edit/Use Consulo as External Editor", true)]
-	static bool UseConsuloAsExternalEditorValidator()
-	{
-		return !UseConsulo();
-	}
+		[MenuItem("Edit/Use Consulo as External Editor", true)]
+		static bool UseConsuloAsExternalEditorValidator()
+		{
+			return !UseConsulo();
+		}
 
-	[MenuItem("Edit/Disable Consulo as External Editor", true)]
-	static bool DisableConsuloAsExternalEditorValidator()
-	{
-		return UseConsulo();
-	}
+		[MenuItem("Edit/Disable Consulo as External Editor", true)]
+		static bool DisableConsuloAsExternalEditorValidator()
+		{
+			return UseConsulo();
+		}
 
-	[MenuItem("Edit/Use Consulo as External Editor")]
-	static void UseConsuloAsExternalEditor()
-	{
-		EditorPrefs.SetBool(ourEditorPrefsKey, true);
-	}
+		[MenuItem("Edit/Use Consulo as External Editor")]
+		static void UseConsuloAsExternalEditor()
+		{
+			EditorPrefs.SetBool(ourEditorPrefsKey, true);
+		}
 
-	[MenuItem("Edit/Disable Consulo as External Editor")]
-	static void DisableConsuloAsExternalEditor()
-	{
-		EditorPrefs.SetBool(ourEditorPrefsKey, false);
-	}
+		[MenuItem("Edit/Disable Consulo as External Editor")]
+		static void DisableConsuloAsExternalEditor()
+		{
+			EditorPrefs.SetBool(ourEditorPrefsKey, false);
+		}
 
 #else
 
-	[MenuItem("Edit/Use Consulo as External Editor", true)]
-	static bool ValidateUncheckConsulo()
-	{
-		Menu.SetChecked("Edit/Use Consulo as External Editor", UseConsulo());
-		return true;
-	}
+		[MenuItem("Edit/Use Consulo as External Editor", true)]
+		static bool ValidateUncheckConsulo()
+		{
+			Menu.SetChecked("Edit/Use Consulo as External Editor", UseConsulo());
+			return true;
+		}
 
 		[MenuItem("Edit/Use Consulo as External Editor")]
 		static void UncheckConsulo()
@@ -63,7 +64,7 @@ namespace MustBe.Consulo.Internal
 
 		static bool UseConsulo()
 		{
-			if (!EditorPrefs.HasKey(ourEditorPrefsKey))
+			if(!EditorPrefs.HasKey(ourEditorPrefsKey))
 			{
 				EditorPrefs.SetBool(ourEditorPrefsKey, false);
 				return false;
@@ -72,17 +73,17 @@ namespace MustBe.Consulo.Internal
 			return EditorPrefs.GetBool(ourEditorPrefsKey);
 		}
 
-		[UnityEditor.Callbacks.OnOpenAssetAttribute()]
+		[OnOpenAsset]
 		static bool OnOpenedAssetCallback(int instanceID, int line)
 		{
-			if (!UseConsulo())
+			if(!UseConsulo())
 			{
 				return false;
 			}
 
 			try
 			{
-				var projectPath = ProjectPath();
+				var projectPath = Path.GetDirectoryName(Application.dataPath);
 
 				var selected = EditorUtility.InstanceIDToObject(instanceID);
 
@@ -94,15 +95,16 @@ namespace MustBe.Consulo.Internal
 
 				projectPath = projectPath.Replace('\\', '/');
 				filePath = filePath.Replace('\\', '/');
-				String json = "{" +
-				"projectPath: \"" + projectPath + "\"," +
-				"filePath: \"" + filePath + "\"," +
-				"editorPath: \"" + EditorApplication.applicationPath.Replace('\\', '/') + "\"," +
-				"contentType: \"" + selected.GetType().ToString() + "\"," +
-				"line: " + line +
-				"}";
+				JSONClass jsonClass = new JSONClass();
+				jsonClass.Add("projectPath", new JSONData(projectPath));
+				jsonClass.Add("filePath", new JSONData(filePath));
+				jsonClass.Add("editorPath", new JSONData(EditorApplication.applicationPath));
+				jsonClass.Add("contentType", new JSONData(selected.GetType().ToString()));
+				jsonClass.Add("line", new JSONData(line));
+
+				var jsonClassToString = jsonClass.ToString();
 				request.ContentType = "application/json; charset=utf-8";
-				var bytes = Encoding.UTF8.GetBytes(json);
+				var bytes = Encoding.UTF8.GetBytes(jsonClassToString);
 				request.ContentLength = bytes.Length;
 
 				using (var stream = request.GetRequestStream())
@@ -116,25 +118,17 @@ namespace MustBe.Consulo.Internal
 					{
 						using (var streamReader = new StreamReader(responseStream))
 						{
-							var result = streamReader.ReadToEnd();
-							if (result.Contains("unsupported-content-type"))
-							{
-								return false;
-							}
+							var result = JSON.Parse(streamReader.ReadToEnd());
+							return result["success"].AsBool;
 						}
 					}
 				}
 			}
 			catch(Exception e)
 			{
-				EditorUtility.DisplayDialog("Consulo Plugin", "Consulo is not accessible at http://localhost:" + ourPort + ", message: " + e.Message, "OK");
+				EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, "Consulo is not accessible at http://localhost:" + ourPort + ", message: " + e.Message, "OK");
 			}
 			return true;
-		}
-
-		static string ProjectPath()
-		{
-			return Path.GetDirectoryName(Application.dataPath);
 		}
 	}
 }
