@@ -15,14 +15,14 @@
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Lib/UnityEditor.dll!/" />
+                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/UnityEditor.dll!/" />
               </binaries>
             </library>
           </orderEntry>
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Lib/UnityEngine.dll!/" />
+                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/UnityEngine.dll!/" />
               </binaries>
             </library>
           </orderEntry>
@@ -40,14 +40,14 @@
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Lib/UnityEditor.dll!/" />
+                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/UnityEditor.dll!/" />
               </binaries>
             </library>
           </orderEntry>
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Lib/UnityEngine.dll!/" />
+                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/UnityEngine.dll!/" />
               </binaries>
             </library>
           </orderEntry>
