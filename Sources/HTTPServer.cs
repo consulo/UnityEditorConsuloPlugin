@@ -143,6 +143,8 @@ namespace MustBe.Consulo.Internal
 
 			TestPackage testPackage = new TestPackage(PlayerSettings.productName, assemblyLocations);
 
+			TestExecutionContext.CurrentContext.TestPackage = testPackage;
+
 			TestSuiteBuilder builder = new TestSuiteBuilder();
 
 			TestSuite testSuite = builder.Build(testPackage);
@@ -152,7 +154,10 @@ namespace MustBe.Consulo.Internal
 				EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, "Suite is null", "OK");
 				return;
 			}
-			testSuite.Run(new NUnitTestListener(), null);
+
+			testSuite.Run(new NUnitTestListener(uuid), null);
+
+			TestExecutionContext.CurrentContext.TestPackage = null;
 		}
 
 		private static JSONClass ReadJSONClass(HttpListenerContext context)
