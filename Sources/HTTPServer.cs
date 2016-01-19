@@ -1,10 +1,14 @@
+using NUnit.Core;
+using NUnit.Core.Filters;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using UnityEditor;
@@ -33,7 +37,7 @@ namespace MustBe.Consulo.Internal
 		private void Listen()
 		{
 			myListener = new HttpListener();
-			myListener.Prefixes.Add("http://*:" + myPort.ToString() + "/");
+			myListener.Prefixes.Add($"http://*:{myPort.ToString()}/");
 			myListener.Start();
 			while(!myStopped)
 			{
@@ -55,42 +59,57 @@ namespace MustBe.Consulo.Internal
 			{
 				string pathAndQuery = context.Request.Url.PathAndQuery;
 
+				context.Response.ContentType = "application/json";
+
+				bool resultValue = false;
+				HttpStatusCode code = HttpStatusCode.InternalServerError;
+
+				JSONClass jsonClass = null;
 				switch(pathAndQuery)
 				{
 					case "/unityOpenScene":
-						context.Response.ContentType = "application/json";
-						bool r = false;
-						using (Stream stream = context.Request.InputStream)
+						jsonClass = ReadJSONClass(context);
+						string fileValue = jsonClass == null ? null : jsonClass["file"].Value;
+						if(fileValue != null)
 						{
-							using (var streamReader = new StreamReader(stream))
+							resultValue = true;
+							UnityUtil.RunInMainThread(() =>
 							{
-								JSONNode result = JSON.Parse(streamReader.ReadToEnd());
-								if(result is JSONClass)
-								{
-									string fileValue = result["file"].Value;
-									if(fileValue != null)
-									{
-										r = true;
-										UnityUtil.RunInMainThread(() =>
-										{
-											EditorApplication.OpenScene(fileValue);
-										});
-									}
-								}
-							}
+								EditorApplication.OpenScene(fileValue);
+							});
 						}
-						String text = "{ \"success\":" + r + " }";
-
-						context.Response.ContentLength64 = text.Length;
-						byte[] encodingUTFGetBytes = Encoding.UTF8.GetBytes(text);
-						context.Response.OutputStream.Write(encodingUTFGetBytes, 0, encodingUTFGetBytes.Length);
-						context.Response.OutputStream.Flush();
-						context.Response.StatusCode = (int)HttpStatusCode.OK;
+						code = HttpStatusCode.OK;
 						break;
-					default:
-						context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+					case "/unityRunTest":
+						jsonClass = ReadJSONClass(context);
+						if(jsonClass != null)
+						{
+							resultValue = true;
+							string type = jsonClass["type"].Value;
+							string uuid = jsonClass["uuid"].Value;
+							UnityUtil.RunInMainThread(() =>
+							{
+								RunNUnitTests(type, uuid);
+							});
+						}
+						code = HttpStatusCode.OK;
+						break;
+						default:
+						UnityUtil.RunInMainThread(() =>
+						{
+							EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, $"Unknown how handle API url {pathAndQuery}, please update UnityEditor plugin for Consulo", "OK");
+						});
+						code = HttpStatusCode.InternalServerError;
 						break;
 				}
+
+				String text = "{ \"success\":" + resultValue + " }";
+
+				context.Response.ContentLength64 = text.Length;
+				context.Response.StatusCode = (int) code;
+				byte[] encodingUTFGetBytes = Encoding.UTF8.GetBytes(text);
+				context.Response.OutputStream.Write(encodingUTFGetBytes, 0, encodingUTFGetBytes.Length);
+				context.Response.OutputStream.Flush();
 			}
 			else
 			{
@@ -105,6 +124,51 @@ namespace MustBe.Consulo.Internal
 			myPort = port;
 			myListenThread = new Thread(Listen);
 			myListenThread.Start();
+		}
+
+		private static void RunNUnitTests(string type, string uuid)
+		{
+			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+			List<string> assemblyLocations = new List<string>();
+			foreach (Assembly t in assemblies)
+			{
+				string fullName = t.FullName;
+				if(fullName.Contains("Assembly-CSharp-Editor") || fullName.Contains("Assembly-UnityScript-Editor"))
+				{
+					assemblyLocations.Add(t.Location);
+				}
+			}
+
+			CoreExtensions.Host.InitializeService(); // need initialize service
+
+			TestPackage testPackage = new TestPackage(PlayerSettings.productName, assemblyLocations);
+
+			TestSuiteBuilder builder = new TestSuiteBuilder();
+
+			TestSuite testSuite = builder.Build(testPackage);
+
+			if(testSuite == null)
+			{
+				EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, "Suite is null", "OK");
+				return;
+			}
+			testSuite.Run(new NUnitTestListener(), null);
+		}
+
+		private static JSONClass ReadJSONClass(HttpListenerContext context)
+		{
+			using (Stream stream = context.Request.InputStream)
+			{
+				using (var streamReader = new StreamReader(stream))
+				{
+					JSONNode result = JSON.Parse(streamReader.ReadToEnd());
+					if(result is JSONClass)
+					{
+						return (JSONClass) result;
+					}
+				}
+			}
+			return null;
 		}
 	}
 }
