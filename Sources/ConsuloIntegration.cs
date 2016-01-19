@@ -81,26 +81,28 @@ namespace MustBe.Consulo.Internal
 				return false;
 			}
 
+			var projectPath = Path.GetDirectoryName(Application.dataPath);
+			var selected = EditorUtility.InstanceIDToObject(instanceID);
+			var filePath = projectPath + "/" + AssetDatabase.GetAssetPath(selected);
+			projectPath = projectPath.Replace('\\', '/');
+			filePath = filePath.Replace('\\', '/');
+			JSONClass jsonClass = new JSONClass();
+			jsonClass.Add("projectPath", new JSONData(projectPath));
+			jsonClass.Add("filePath", new JSONData(filePath));
+			jsonClass.Add("editorPath", new JSONData(EditorApplication.applicationPath));
+			jsonClass.Add("contentType", new JSONData(selected.GetType().ToString()));
+			jsonClass.Add("line", new JSONData(line));
+
+			return SendToConsulo("unityOpenFile", jsonClass);
+		}
+
+		public static bool SendToConsulo(String url, JSONClass jsonClass)
+		{
 			try
 			{
-				var projectPath = Path.GetDirectoryName(Application.dataPath);
-
-				var selected = EditorUtility.InstanceIDToObject(instanceID);
-
-				var filePath = projectPath + "/" + AssetDatabase.GetAssetPath(selected);
-
-				var request = WebRequest.Create("http://localhost:" + ourPort + "/api/unityOpenFile");
+				var request = WebRequest.Create("http://localhost:" + ourPort + "/api/" + url);
 				request.Timeout = 10000;
 				request.Method = "POST";
-
-				projectPath = projectPath.Replace('\\', '/');
-				filePath = filePath.Replace('\\', '/');
-				JSONClass jsonClass = new JSONClass();
-				jsonClass.Add("projectPath", new JSONData(projectPath));
-				jsonClass.Add("filePath", new JSONData(filePath));
-				jsonClass.Add("editorPath", new JSONData(EditorApplication.applicationPath));
-				jsonClass.Add("contentType", new JSONData(selected.GetType().ToString()));
-				jsonClass.Add("line", new JSONData(line));
 
 				var jsonClassToString = jsonClass.ToString();
 				request.ContentType = "application/json; charset=utf-8";
