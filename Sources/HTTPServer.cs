@@ -89,7 +89,9 @@ namespace MustBe.Consulo.Internal
 							string uuid = jsonClass["uuid"].Value;
 							UnityUtil.RunInMainThread(() =>
 							{
+								int undo = Undo.GetCurrentGroup();
 								RunNUnitTests(type, uuid);
+								Undo.RevertAllDownToGroup(undo);
 							});
 						}
 						code = HttpStatusCode.OK;
@@ -155,7 +157,7 @@ namespace MustBe.Consulo.Internal
 				return;
 			}
 
-			testSuite.Run(new NUnitTestListener(uuid), null);
+			testSuite.Run(new NUnitTestListener(uuid), TestFilter.Empty);
 
 			TestExecutionContext.CurrentContext.TestPackage = null;
 		}
