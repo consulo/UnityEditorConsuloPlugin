@@ -92,6 +92,11 @@ namespace MustBe.Consulo.Internal
 								int undo = Undo.GetCurrentGroup();
 								RunNUnitTests(type, uuid);
 								Undo.RevertAllDownToGroup(undo);
+
+								JSONClass result = new JSONClass();
+								result.Add("uuid", uuid);
+								result.Add("type", "RunFinished");
+								ConsuloIntegration.SendToConsulo("unityTestState", result);
 							});
 						}
 						code = HttpStatusCode.OK;
