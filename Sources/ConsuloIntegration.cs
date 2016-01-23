@@ -128,7 +128,7 @@ namespace MustBe.Consulo.Internal
 			}
 			catch(Exception e)
 			{
-				EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, "Consulo is not accessible at http://localhost:" + ourPort + ", message: " + e.Message, "OK");
+				EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, "Consulo is not accessible at http://localhost:" + ourPort + "/" + url + ", message: " + e.Message, "OK");
 			}
 			return true;
 		}

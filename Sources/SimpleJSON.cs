@@ -124,8 +124,8 @@ namespace MustBe.Consulo.Internal
 		{
 			get
 			{
-				foreach (var C in Childs)
-					foreach (var D in C.DeepChilds)
+				foreach(var C in Childs)
+					foreach(var D in C.DeepChilds)
 						yield return D;
 			}
 		}
@@ -139,10 +139,10 @@ namespace MustBe.Consulo.Internal
 			return "JSONNode";
 		}
 
-#endregion common interface
+	#endregion common interface
 
-#region typecasting properties
-        public virtual int AsInt
+	#region typecasting properties
+            public virtual int AsInt
 	{
 		get
 		{
@@ -214,10 +214,10 @@ namespace MustBe.Consulo.Internal
 		}
 
 
-#endregion typecasting properties
+		#endregion typecasting properties
 
-#region operators
-        public static implicit operator JSONNode(string s)
+		#region operators
+                public static implicit operator JSONNode(string s)
 	{
 		return new JSONData(s);
 	}
@@ -246,12 +246,12 @@ namespace MustBe.Consulo.Internal
 		}
 
 
-#endregion operators
+	#endregion operators
 
 		internal static string Escape(string aText)
 		{
 			string result = "";
-			foreach (char c in aText)
+			foreach(char c in aText)
 			{
 				switch(c)
 				{
@@ -281,139 +281,139 @@ namespace MustBe.Consulo.Internal
 				switch(aJSON[i])
 				{
 					case '{':
-					if(QuoteMode)
-					{
-						Token += aJSON[i];
+						if(QuoteMode)
+						{
+							Token += aJSON[i];
+							break;
+						}
+						stack.Push(new JSONClass());
+						if(ctx != null)
+						{
+							TokenName = TokenName.Trim();
+							if(ctx is JSONArray)
+								ctx.Add(stack.Peek());
+							else if(TokenName != "")
+								ctx.Add(TokenName, stack.Peek());
+						}
+						TokenName = "";
+						Token = "";
+						ctx = stack.Peek();
 						break;
-					}
-					stack.Push(new JSONClass());
-					if(ctx != null)
-					{
-						TokenName = TokenName.Trim();
-						if(ctx is JSONArray)
-							ctx.Add(stack.Peek());
-						else if(TokenName != "")
-							ctx.Add(TokenName, stack.Peek());
-					}
-					TokenName = "";
-					Token = "";
-					ctx = stack.Peek();
-					break;
 
 					case '[':
-					if(QuoteMode)
-					{
-						Token += aJSON[i];
-						break;
-					}
+						if(QuoteMode)
+						{
+							Token += aJSON[i];
+							break;
+						}
 
-					stack.Push(new JSONArray());
-					if(ctx != null)
-					{
-						TokenName = TokenName.Trim();
-						if(ctx is JSONArray)
-							ctx.Add(stack.Peek());
-						else if(TokenName != "")
-							ctx.Add(TokenName, stack.Peek());
-					}
-					TokenName = "";
-					Token = "";
-					ctx = stack.Peek();
-					break;
+						stack.Push(new JSONArray());
+						if(ctx != null)
+						{
+							TokenName = TokenName.Trim();
+							if(ctx is JSONArray)
+								ctx.Add(stack.Peek());
+							else if(TokenName != "")
+								ctx.Add(TokenName, stack.Peek());
+						}
+						TokenName = "";
+						Token = "";
+						ctx = stack.Peek();
+						break;
 
 					case '}':
 					case ']':
-					if(QuoteMode)
-					{
-						Token += aJSON[i];
-						break;
-					}
-					if(stack.Count == 0)
-						throw new Exception("JSON Parse: Too many closing brackets");
+						if(QuoteMode)
+						{
+							Token += aJSON[i];
+							break;
+						}
+						if(stack.Count == 0)
+							throw new Exception("JSON Parse: Too many closing brackets");
 
-					stack.Pop();
-					if(Token != "")
-					{
-						TokenName = TokenName.Trim();
-						if(ctx is JSONArray)
-							ctx.Add(Token);
-						else if(TokenName != "")
-							ctx.Add(TokenName, Token);
-					}
-					TokenName = "";
-					Token = "";
-					if(stack.Count > 0)
-						ctx = stack.Peek();
-					break;
+						stack.Pop();
+						if(Token != "")
+						{
+							TokenName = TokenName.Trim();
+							if(ctx is JSONArray)
+								ctx.Add(Token);
+							else if(TokenName != "")
+								ctx.Add(TokenName, Token);
+						}
+						TokenName = "";
+						Token = "";
+						if(stack.Count > 0)
+							ctx = stack.Peek();
+						break;
 
 					case ':':
-					if(QuoteMode)
-					{
-						Token += aJSON[i];
+						if(QuoteMode)
+						{
+							Token += aJSON[i];
+							break;
+						}
+						TokenName = Token;
+						Token = "";
 						break;
-					}
-					TokenName = Token;
-					Token = "";
-					break;
 
 					case '"':
-					QuoteMode ^= true;
-					break;
+						QuoteMode ^= true;
+						break;
 
 					case ',':
-					if(QuoteMode)
-					{
-						Token += aJSON[i];
+						if(QuoteMode)
+						{
+							Token += aJSON[i];
+							break;
+						}
+						if(Token != "")
+						{
+							if(ctx is JSONArray)
+								ctx.Add(Token);
+							else if(TokenName != "")
+								ctx.Add(TokenName, Token);
+						}
+						TokenName = "";
+						Token = "";
 						break;
-					}
-					if(Token != "")
-					{
-						if(ctx is JSONArray)
-							ctx.Add(Token);
-						else if(TokenName != "")
-							ctx.Add(TokenName, Token);
-					}
-					TokenName = "";
-					Token = "";
-					break;
 
 					case '\r':
 					case '\n':
-					break;
+						break;
 
 					case ' ':
 					case '\t':
-					if(QuoteMode)
-						Token += aJSON[i];
-					break;
+						if(QuoteMode)
+							Token += aJSON[i];
+						break;
 
 					case '\\':
-					++i;
-					if(QuoteMode)
-					{
-						char C = aJSON[i];
-						switch(C)
+						++i;
+						if(QuoteMode)
 						{
-							case 't' : Token += '\t'; break;
-							case 'r' : Token += '\r'; break;
-							case 'n' : Token += '\n'; break;
-							case 'b' : Token += '\b'; break;
-							case 'f' : Token += '\f'; break;
-							case 'u':
+							char C = aJSON[i];
+							switch(C)
 							{
-								string s = aJSON.Substring(i + 1, 4);
-								Token += (char)int.Parse(s, System.Globalization.NumberStyles.AllowHexSpecifier);
-								i += 4;
-								break;
+								case 't' : Token += '\t'; break;
+								case 'r' : Token += '\r'; break;
+								case 'n' : Token += '\n'; break;
+								case 'b' : Token += '\b'; break;
+								case 'f' : Token += '\f'; break;
+								case 'u':
+								{
+									string s = aJSON.Substring(i + 1, 4);
+									Token += (char)int.Parse(s, System.Globalization.NumberStyles.AllowHexSpecifier);
+									i += 4;
+									break;
+								}
+								default  : Token += C; break;
 							}
-							default  : Token += C; break;
 						}
-					}
-					break;
+						break;
 
 					default:
-					Token += aJSON[i];
-					break;
+						Token += aJSON[i];
+						break;
 				}
 				++i;
 			}
@@ -452,11 +452,11 @@ namespace MustBe.Consulo.Internal
 		{
             #if USE_FileIO
 
-	System.IO.Directory.CreateDirectory((new System.IO.FileInfo(aFileName)).Directory.FullName);
-	using (var F = System.IO.File.OpenWrite(aFileName))
-	{
-		SaveToStream(F);
-	}
+			System.IO.Directory.CreateDirectory((new System.IO.FileInfo(aFileName)).Directory.FullName);
+			using (var F = System.IO.File.OpenWrite(aFileName))
+			{
+				SaveToStream(F);
+			}
             #else
             throw new Exception("Can't use File IO stuff in webplayer");
             #endif
@@ -551,10 +551,10 @@ namespace MustBe.Consulo.Internal
 		{
             #if USE_FileIO
 
-	using (var F = System.IO.File.OpenRead(aFileName))
-	{
-		return LoadFromStream(F);
-	}
+			using (var F = System.IO.File.OpenRead(aFileName))
+			{
+				return LoadFromStream(F);
+			}
             #else
             throw new Exception("Can't use File IO stuff in webplayer");
             #endif
@@ -627,19 +627,19 @@ namespace MustBe.Consulo.Internal
 		{
 			get
 			{
-				foreach (JSONNode N in m_List)
+				foreach(JSONNode N in m_List)
 					yield return N;
 			}
 		}
 		public IEnumerator GetEnumerator()
 		{
-			foreach (JSONNode N in m_List)
+			foreach(JSONNode N in m_List)
 				yield return N;
 		}
 		public override string ToString()
 		{
 			string result = "[ ";
-			foreach (JSONNode N in m_List)
+			foreach(JSONNode N in m_List)
 			{
 				if(result.Length > 2)
 					result += ", ";
@@ -651,7 +651,7 @@ namespace MustBe.Consulo.Internal
 		public override string ToString(string aPrefix)
 		{
 			string result = "[ ";
-			foreach (JSONNode N in m_List)
+			foreach(JSONNode N in m_List)
 			{
 				if(result.Length > 3)
 					result += ", ";
@@ -750,20 +750,20 @@ namespace MustBe.Consulo.Internal
 		{
 			get
 			{
-				foreach (KeyValuePair<string, JSONNode> N in m_Dict)
+				foreach(KeyValuePair<string, JSONNode> N in m_Dict)
 					yield return N.Value;
 			}
 		}
 
 		public IEnumerator GetEnumerator()
 		{
-			foreach (KeyValuePair<string, JSONNode> N in m_Dict)
+			foreach(KeyValuePair<string, JSONNode> N in m_Dict)
 				yield return N;
 		}
 		public override string ToString()
 		{
 			string result = "{";
-			foreach (KeyValuePair<string, JSONNode> N in m_Dict)
+			foreach(KeyValuePair<string, JSONNode> N in m_Dict)
 			{
 				if(result.Length > 2)
 					result += ", ";
@@ -775,7 +775,7 @@ namespace MustBe.Consulo.Internal
 		public override string ToString(string aPrefix)
 		{
 			string result = "{ ";
-			foreach (KeyValuePair<string, JSONNode> N in m_Dict)
+			foreach(KeyValuePair<string, JSONNode> N in m_Dict)
 			{
 				if(result.Length > 3)
 					result += ", ";
@@ -789,7 +789,7 @@ namespace MustBe.Consulo.Internal
 		{
 			aWriter.Write((byte)JSONBinaryTag.Class);
 			aWriter.Write(m_Dict.Count);
-			foreach (string K in m_Dict.Keys)
+			foreach(string K in m_Dict.Keys)
 			{
 				aWriter.Write(K);
 				m_Dict[K].Serialize(aWriter);

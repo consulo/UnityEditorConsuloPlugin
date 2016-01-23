@@ -65,8 +65,26 @@ namespace MustBe.Consulo.Internal
 				HttpStatusCode code = HttpStatusCode.InternalServerError;
 
 				JSONClass jsonClass = null;
+				String uuid = null;
 				switch(pathAndQuery)
 				{
+					case "/unityRefresh":
+						jsonClass = ReadJSONClass(context);
+						uuid = jsonClass == null ? null : jsonClass["uuid"].Value;
+						resultValue = uuid != null;
+						if(uuid != null)
+						{
+							UnityUtil.RunInMainThread(() =>
+							{
+								AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+
+								JSONClass result = new JSONClass();
+								result.Add("uuid", uuid);
+								ConsuloIntegration.SendToConsulo("unityRefreshResponse", result);
+							});
+						}
+						code = HttpStatusCode.OK;
+						break;
 					case "/unityOpenScene":
 						jsonClass = ReadJSONClass(context);
 						string fileValue = jsonClass == null ? null : jsonClass["file"].Value;
@@ -76,6 +94,7 @@ namespace MustBe.Consulo.Internal
 							UnityUtil.RunInMainThread(() =>
 							{
 								EditorApplication.OpenScene(fileValue);
+								EditorUtility.FocusProjectWindow();
 							});
 						}
 						code = HttpStatusCode.OK;
@@ -86,7 +105,7 @@ namespace MustBe.Consulo.Internal
 						{
 							resultValue = true;
 							string type = jsonClass["type"].Value;
-							string uuid = jsonClass["uuid"].Value;
+							uuid = jsonClass["uuid"].Value;
 							UnityUtil.RunInMainThread(() =>
 							{
 								int undo = Undo.GetCurrentGroup();
@@ -101,7 +120,7 @@ namespace MustBe.Consulo.Internal
 						}
 						code = HttpStatusCode.OK;
 						break;
-						default:
+					default:
 						UnityUtil.RunInMainThread(() =>
 						{
 							EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, $"Unknown how handle API url {pathAndQuery}, please update UnityEditor plugin for Consulo", "OK");
@@ -137,7 +156,7 @@ namespace MustBe.Consulo.Internal
 		{
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			List<string> assemblyLocations = new List<string>();
-			foreach (Assembly t in assemblies)
+			foreach(Assembly t in assemblies)
 			{
 				string fullName = t.FullName;
 				if(fullName.Contains("Assembly-CSharp-Editor") || fullName.Contains("Assembly-UnityScript-Editor"))
