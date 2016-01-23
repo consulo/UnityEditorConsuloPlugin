@@ -1,5 +1,23 @@
+/*
+ * Copyright 2013-2016 must-be.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#if NUNIT
 using NUnit.Core;
 using NUnit.Core.Filters;
+#endif
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -99,6 +117,7 @@ namespace MustBe.Consulo.Internal
 						}
 						code = HttpStatusCode.OK;
 						break;
+					#if NUNIT
 					case "/unityRunTest":
 						jsonClass = ReadJSONClass(context);
 						if(jsonClass != null)
@@ -120,6 +139,7 @@ namespace MustBe.Consulo.Internal
 						}
 						code = HttpStatusCode.OK;
 						break;
+					#endif
 					default:
 						UnityUtil.RunInMainThread(() =>
 						{
@@ -152,11 +172,12 @@ namespace MustBe.Consulo.Internal
 			myListenThread.Start();
 		}
 
+		#if NUNIT
 		private static void RunNUnitTests(string type, string uuid)
 		{
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			List<string> assemblyLocations = new List<string>();
-			foreach(Assembly t in assemblies)
+			foreach (Assembly t in assemblies)
 			{
 				string fullName = t.FullName;
 				if(fullName.Contains("Assembly-CSharp-Editor") || fullName.Contains("Assembly-UnityScript-Editor"))
@@ -185,6 +206,7 @@ namespace MustBe.Consulo.Internal
 
 			TestExecutionContext.CurrentContext.TestPackage = null;
 		}
+		#endif
 
 		private static JSONClass ReadJSONClass(HttpListenerContext context)
 		{
