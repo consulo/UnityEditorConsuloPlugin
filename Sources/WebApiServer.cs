@@ -17,12 +17,16 @@
 using System;
 using System.Diagnostics;
 using UnityEditor;
+using UnityEngine;
 
 namespace MustBe.Consulo.Internal
 {
 	[InitializeOnLoad]
 	public class WebApiServer
 	{
+		public static String ourCurrentTestUUID;
+		public static String ourCurrentTestName;
+
 		static WebApiServer()
 		{
 			Process currentProcess = Process.GetCurrentProcess();
@@ -36,6 +40,23 @@ namespace MustBe.Consulo.Internal
 				{
 					httpServer.Stop();
 				};
+			});
+
+			Application.RegisterLogCallback((condition, stackTrace, type) =>
+			{
+				string testUUID = ourCurrentTestUUID;
+				if(testUUID != null)
+				{
+					JSONClass jsonClass = new JSONClass();
+					jsonClass.Add("name", ourCurrentTestName);
+					jsonClass.Add("uuid", testUUID);
+					jsonClass.Add("type", "TestOutput");
+					jsonClass.Add("message", condition);
+					jsonClass.Add("stackTrace", stackTrace);
+					jsonClass.Add("messageType", Enum.GetName(typeof(LogType), type));
+
+					ConsuloIntegration.SendToConsulo("unityTestState", jsonClass);
+				}
 			});
 		}
 	}

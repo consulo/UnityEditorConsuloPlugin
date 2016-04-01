@@ -16,16 +16,11 @@
 
 #if NUNIT
 using NUnit.Core;
-using NUnit.Core.Filters;
 #endif
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -172,7 +167,7 @@ namespace MustBe.Consulo.Internal
 			myListenThread.Start();
 		}
 
-		#if NUNIT
+#if NUNIT
 		private static void RunNUnitTests(string type, string uuid)
 		{
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -202,7 +197,12 @@ namespace MustBe.Consulo.Internal
 				return;
 			}
 
+			WebApiServer.ourCurrentTestUUID = uuid;
+
 			testSuite.Run(new NUnitTestListener(uuid), TestFilter.Empty);
+
+			WebApiServer.ourCurrentTestUUID = null;
+			WebApiServer.ourCurrentTestName = null;
 
 			TestExecutionContext.CurrentContext.TestPackage = null;
 		}

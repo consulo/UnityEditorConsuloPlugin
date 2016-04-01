@@ -17,7 +17,6 @@
 #if NUNIT
 using NUnit.Core;
 using System;
-using UnityEditor;
 
 namespace MustBe.Consulo.Internal
 {
@@ -33,6 +32,8 @@ namespace MustBe.Consulo.Internal
 
 		public void TestStarted(NUnit.Core.TestName testName)
 		{
+			WebApiServer.ourCurrentTestName = testName.Name;
+
 			JSONClass jsonClass = new JSONClass();
 			jsonClass.Add("name", testName.Name);
 			jsonClass.Add("uuid", myUUID);
@@ -44,7 +45,13 @@ namespace MustBe.Consulo.Internal
 
 		public void TestOutput(NUnit.Core.TestOutput testOutput)
 		{
-			// something?
+			JSONClass jsonClass = new JSONClass();
+			jsonClass.Add("name", Enum.GetName(typeof(TestOutputType), testOutput.Type));
+			jsonClass.Add("uuid", myUUID);
+			jsonClass.Add("type", "TestOutput");
+			jsonClass.Add("message", testOutput.ToString());
+
+			ConsuloIntegration.SendToConsulo("unityTestState", jsonClass);
 		}
 
 		public void RunStarted(string name, int testCount)
@@ -93,7 +100,31 @@ namespace MustBe.Consulo.Internal
 			JSONClass jsonClass = new JSONClass();
 			jsonClass.Add("name", result.Name);
 			jsonClass.Add("uuid", myUUID);
-			jsonClass.Add("type", result.IsSuccess ? "TestFinished" : "TestFailed");
+			String typeText;
+			switch(result.ResultState)
+			{
+				case ResultState.Ignored:
+					typeText = "TestIgnored";
+					break;
+				case ResultState.Success:
+					typeText = "TestFinished";
+					break;
+				default:
+					typeText = "TestFailed";
+					break;
+			}
+
+			jsonClass.Add("type", typeText);
+			string message = result.Message;
+			if(message != null)
+			{
+				jsonClass.Add("message", message);
+			}
+			string trace = result.StackTrace;
+			if(trace != null)
+			{
+				jsonClass.Add("stackTrace", trace);
+			}
 
 			ConsuloIntegration.SendToConsulo("unityTestState", jsonClass);
 		}
