@@ -125,6 +125,7 @@ namespace MustBe.Consulo.Internal
 			{
 				jsonClass.Add("stackTrace", trace);
 			}
+			jsonClass.Add("time", result.Time.ToString());
 
 			ConsuloIntegration.SendToConsulo("unityTestState", jsonClass);
 		}
