@@ -21,5 +21,8 @@ namespace MustBe.Consulo.Internal
 	internal class PluginConstants
 	{
 		internal const String DIALOG_TITLE = "Consulo Plugin";
+		internal const String ourEditorPrefsKey = "UseConsuloAsExternalEditor";
+		internal const int ourPort = 62242;
+		//internal const int ourPort = 55333; // dev port
 	}
 }

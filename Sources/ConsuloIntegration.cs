@@ -29,10 +29,6 @@ namespace MustBe.Consulo.Internal
 	/// </summary>
 	public class ConsuloIntegration
 	{
-		private const int ourPort = 62242;
-		//private const int ourPort = 55333; // dev port
-		private const String ourEditorPrefsKey = "UseConsuloAsExternalEditor";
-
 #if UNITY_BEFORE_5
 
 		[MenuItem("Edit/Use Consulo as External Editor", true)]
@@ -50,13 +46,13 @@ namespace MustBe.Consulo.Internal
 		[MenuItem("Edit/Use Consulo as External Editor")]
 		static void UseConsuloAsExternalEditor()
 		{
-			EditorPrefs.SetBool(ourEditorPrefsKey, true);
+			EditorPrefs.SetBool(PluginConstants.ourEditorPrefsKey, true);
 		}
 
 		[MenuItem("Edit/Disable Consulo as External Editor")]
 		static void DisableConsuloAsExternalEditor()
 		{
-			EditorPrefs.SetBool(ourEditorPrefsKey, false);
+			EditorPrefs.SetBool(PluginConstants.ourEditorPrefsKey, false);
 		}
 
 #else
@@ -73,19 +69,19 @@ namespace MustBe.Consulo.Internal
 		{
 			var state = UseConsulo();
 			Menu.SetChecked("Edit/Use Consulo as External Editor", !state);
-			EditorPrefs.SetBool(ourEditorPrefsKey, !state);
+			EditorPrefs.SetBool(PluginConstants.ourEditorPrefsKey, !state);
 		}
 #endif
 
 		static bool UseConsulo()
 		{
-			if(!EditorPrefs.HasKey(ourEditorPrefsKey))
+			if(!EditorPrefs.HasKey(PluginConstants.ourEditorPrefsKey))
 			{
-				EditorPrefs.SetBool(ourEditorPrefsKey, false);
+				EditorPrefs.SetBool(PluginConstants.ourEditorPrefsKey, false);
 				return false;
 			}
 
-			return EditorPrefs.GetBool(ourEditorPrefsKey);
+			return EditorPrefs.GetBool(PluginConstants.ourEditorPrefsKey);
 		}
 
 		[OnOpenAsset]
@@ -115,7 +111,7 @@ namespace MustBe.Consulo.Internal
 		{
 			try
 			{
-				var request = WebRequest.Create("http://localhost:" + ourPort + "/api/" + url);
+				var request = WebRequest.Create("http://localhost:" + PluginConstants.ourPort + "/api/" + url);
 				request.Timeout = 10000;
 				request.Method = "POST";
 
@@ -143,7 +139,7 @@ namespace MustBe.Consulo.Internal
 			}
 			catch(Exception e)
 			{
-				EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, "Consulo is not accessible at http://localhost:" + ourPort + "/" + url + ", message: " + e.Message, "OK");
+				EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, "Consulo is not accessible at http://localhost:" + PluginConstants.ourPort + "/" + url + ", message: " + e.Message, "OK");
 			}
 			return true;
 		}
