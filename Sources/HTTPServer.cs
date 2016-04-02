@@ -138,7 +138,7 @@ namespace MustBe.Consulo.Internal
 					default:
 						UnityUtil.RunInMainThread(() =>
 						{
-							EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, $"Unknown how handle API url {pathAndQuery}, please update UnityEditor plugin for Consulo", "OK");
+							EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, $"Unknown how handle API url {pathAndQuery}, please update UnityEditor plugin for Consulo", "OK");
 						});
 						code = HttpStatusCode.InternalServerError;
 						break;
@@ -193,7 +193,7 @@ namespace MustBe.Consulo.Internal
 
 			if(testSuite == null)
 			{
-				EditorUtility.DisplayDialog(PluginConstants.DIALOG_TITLE, "Suite is null", "OK");
+				EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, "Suite is null", "OK");
 				return;
 			}
 
