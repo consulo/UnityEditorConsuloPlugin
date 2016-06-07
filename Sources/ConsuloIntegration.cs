@@ -109,6 +109,11 @@ namespace MustBe.Consulo.Internal
 
 		public static bool SendToConsulo(String url, JSONClass jsonClass)
 		{
+			if(!UseConsulo())
+			{
+				return false;
+			}
+
 			try
 			{
 				var request = WebRequest.Create("http://localhost:" + PluginConstants.ourPort + "/api/" + url);
