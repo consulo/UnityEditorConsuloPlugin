@@ -5,7 +5,7 @@
       <module name="UnityEditorConsuloPlugin" dirurl="file://$PROJECT_DIR$" current-layer="unity5.3">
         <module-layer name="unity4.6">
           <extension id="mono-csharp" unsafe-code="false" language-version-module-name="" language-version-name="_6_0" optimize-code="false" platform="ANY_CPU" custom-compiler-sdk-module-name="" custom-compiler-sdk-name="" />
-          <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0 (predefined)" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$4.6.$TargetFileExt$" output-dir="Build" namespace-prefix="">
+          <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$4.6.$TargetFileExt$" output-dir="Build" namespace-prefix="">
             <define>DEBUG</define>
             <define>UNITY_BEFORE_5</define>
           </extension>
@@ -16,21 +16,21 @@
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/UnityEditor.dll!/" />
+                <root url="netdll://$MODULE_DIR$/Dependencies/UnityEditor.dll!/" />
               </binaries>
             </library>
           </orderEntry>
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/UnityEngine.dll!/" />
+                <root url="netdll://$MODULE_DIR$/Dependencies/UnityEngine.dll!/" />
               </binaries>
             </library>
           </orderEntry>
         </module-layer>
         <module-layer name="unity5">
           <extension id="mono-csharp" unsafe-code="false" language-version-module-name="" language-version-name="_6_0" optimize-code="false" platform="ANY_CPU" custom-compiler-sdk-module-name="" custom-compiler-sdk-name="" />
-          <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0 (predefined)" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$5.$TargetFileExt$" output-dir="Build" namespace-prefix="">
+          <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$5.$TargetFileExt$" output-dir="Build" namespace-prefix="">
             <define>DEBUG</define>
           </extension>
           <content url="file://$MODULE_DIR$" />
@@ -40,21 +40,21 @@
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/UnityEditor.dll!/" />
+                <root url="netdll://$MODULE_DIR$/Dependencies/UnityEditor.dll!/" />
               </binaries>
             </library>
           </orderEntry>
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/UnityEngine.dll!/" />
+                <root url="netdll://$MODULE_DIR$/Dependencies/UnityEngine.dll!/" />
               </binaries>
             </library>
           </orderEntry>
         </module-layer>
         <module-layer name="unity5.3">
           <extension id="mono-csharp" unsafe-code="false" language-version-module-name="" language-version-name="_6_0" optimize-code="false" platform="ANY_CPU" custom-compiler-sdk-module-name="" custom-compiler-sdk-name="" />
-          <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0 (predefined)" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$5.3.$TargetFileExt$" output-dir="Build" namespace-prefix="">
+          <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$5.3.$TargetFileExt$" output-dir="Build" namespace-prefix="">
             <define>DEBUG</define>
             <define>NUNIT</define>
           </extension>
@@ -65,35 +65,35 @@
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/UnityEditor.dll!/" />
+                <root url="netdll://$MODULE_DIR$/Dependencies/UnityEditor.dll!/" />
               </binaries>
             </library>
           </orderEntry>
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/UnityEngine.dll!/" />
+                <root url="netdll://$MODULE_DIR$/Dependencies/UnityEngine.dll!/" />
               </binaries>
             </library>
           </orderEntry>
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/NUnit/nunit.core.dll!/" />
+                <root url="netdll://$MODULE_DIR$/Dependencies/NUnit/nunit.core.dll!/" />
               </binaries>
             </library>
           </orderEntry>
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/NUnit/nunit.core.interfaces.dll!/" />
+                <root url="netdll://$MODULE_DIR$/Dependencies/NUnit/nunit.core.interfaces.dll!/" />
               </binaries>
             </library>
           </orderEntry>
           <orderEntry type="module-library">
             <library>
               <binaries>
-                <root url="netdll://R:/_github.com/consulo/UnityEditorConsuloPlugin/Dependencies/NUnit/nunit.framework.dll!/" />
+                <root url="netdll://$MODULE_DIR$/Dependencies/NUnit/nunit.framework.dll!/" />
               </binaries>
             </library>
           </orderEntry>

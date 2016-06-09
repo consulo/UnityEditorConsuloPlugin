@@ -16,6 +16,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,8 +25,8 @@ namespace MustBe.Consulo.Internal
 	[InitializeOnLoad]
 	public class WebApiServer
 	{
-		public static String ourCurrentTestUUID;
-		public static String ourCurrentTestName;
+		public static string ourCurrentTestUUID;
+		public static string ourCurrentTestName;
 
 		static WebApiServer()
 		{
@@ -57,7 +58,28 @@ namespace MustBe.Consulo.Internal
 
 					ConsuloIntegration.SendToConsulo("unityTestState", jsonClass);
 				}
+				else
+				{
+					JSONClass jsonClass = new JSONClass();
+
+					jsonClass.Add("condition", condition);
+					jsonClass.Add("stackTrace", stackTrace);
+					jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
+					jsonClass.Add("type", Enum.GetName(typeof(LogType), type));
+
+					ConsuloIntegration.SendToConsulo("unityLog", jsonClass);
+				}
 			});
+
+			EditorApplication.playmodeStateChanged += delegate
+			{
+				JSONClass jsonClass = new JSONClass();
+
+				jsonClass.Add("isPlaying", new JSONData(EditorApplication.isPlaying));
+				jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
+
+				ConsuloIntegration.SendToConsulo("unityPlayState", jsonClass);
+			};
 		}
 	}
 }

@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-using System;
+using System.Net;
 
 namespace MustBe.Consulo.Internal
 {
-	internal class PluginConstants
+	internal struct WebRequestState
 	{
-		internal const string ourDialogTitle = "Consulo Plugin";
-		internal const string ourEditorPrefsKey = "UseConsuloAsExternalEditor";
-		internal const int ourPort = 62242;
-		//internal const int ourPort = 55333; // dev port
+		internal WebRequest Request;
+		internal JSONClass Json;
 	}
 }

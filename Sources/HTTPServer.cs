@@ -78,7 +78,7 @@ namespace MustBe.Consulo.Internal
 				HttpStatusCode code = HttpStatusCode.InternalServerError;
 
 				JSONClass jsonClass = null;
-				String uuid = null;
+				string uuid = null;
 				switch(pathAndQuery)
 				{
 					case "/unityRefresh":
@@ -144,7 +144,7 @@ namespace MustBe.Consulo.Internal
 						break;
 				}
 
-				String text = "{ \"success\":" + resultValue + " }";
+				string text = "{ \"success\":" + resultValue + " }";
 
 				context.Response.ContentLength64 = text.Length;
 				context.Response.StatusCode = (int) code;

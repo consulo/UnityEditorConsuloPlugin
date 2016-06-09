@@ -100,7 +100,7 @@ namespace MustBe.Consulo.Internal
 			JSONClass jsonClass = new JSONClass();
 			jsonClass.Add("name", result.Name);
 			jsonClass.Add("uuid", myUUID);
-			String typeText;
+			string typeText;
 			switch(result.ResultState)
 			{
 				case ResultState.Ignored:

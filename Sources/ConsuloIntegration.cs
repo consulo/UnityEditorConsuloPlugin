@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -29,6 +30,8 @@ namespace MustBe.Consulo.Internal
 	/// </summary>
 	public class ConsuloIntegration
 	{
+		private static readonly List<string> ourSupportedContentTypes = new List<string>(new string[]{"UnityEditor.MonoScript", "UnityEngine.Shader"});
+
 #if UNITY_BEFORE_5
 
 		[MenuItem("Edit/Use Consulo as External Editor", true)]
@@ -92,11 +95,18 @@ namespace MustBe.Consulo.Internal
 				return false;
 			}
 
-			var projectPath = Path.GetDirectoryName(Application.dataPath);
-			var selected = EditorUtility.InstanceIDToObject(instanceID);
-			var filePath = projectPath + "/" + AssetDatabase.GetAssetPath(selected);
+			UnityEngine.Object selected = EditorUtility.InstanceIDToObject(instanceID);
+			string contentType = selected.GetType().ToString();
+			if(!ourSupportedContentTypes.Contains(contentType))
+			{
+				return false;
+			}
+
+			string projectPath = Path.GetDirectoryName(Application.dataPath);
+			string filePath = projectPath + "/" + AssetDatabase.GetAssetPath(selected);
 			projectPath = projectPath.Replace('\\', '/');
 			filePath = filePath.Replace('\\', '/');
+
 			JSONClass jsonClass = new JSONClass();
 			jsonClass.Add("projectPath", new JSONData(projectPath));
 			jsonClass.Add("filePath", new JSONData(filePath));
@@ -104,49 +114,49 @@ namespace MustBe.Consulo.Internal
 			jsonClass.Add("contentType", new JSONData(selected.GetType().ToString()));
 			jsonClass.Add("line", new JSONData(line));
 
-			return SendToConsulo("unityOpenFile", jsonClass);
+			SendToConsulo("unityOpenFile", jsonClass);
+			return true;
 		}
 
-		public static bool SendToConsulo(String url, JSONClass jsonClass)
+		public static void SendToConsulo(string url, JSONClass jsonClass)
 		{
 			if(!UseConsulo())
 			{
-				return false;
+				return;
 			}
 
 			try
 			{
-				var request = WebRequest.Create("http://localhost:" + PluginConstants.ourPort + "/api/" + url);
+				WebRequest request = WebRequest.Create("http://localhost:" + PluginConstants.ourPort + "/api/" + url);
 				request.Timeout = 10000;
 				request.Method = "POST";
-
-				var jsonClassToString = jsonClass.ToString();
 				request.ContentType = "application/json; charset=utf-8";
-				var bytes = Encoding.UTF8.GetBytes(jsonClassToString);
-				request.ContentLength = bytes.Length;
 
-				using (var stream = request.GetRequestStream())
+				WebRequestState state = new WebRequestState
 				{
-					stream.Write(bytes, 0, bytes.Length);
-				}
+					Request = request,
+					Json = jsonClass
+				};
 
-				using (var requestGetResponse = request.GetResponse())
-				{
-					using (var responseStream = requestGetResponse.GetResponseStream())
-					{
-						using (var streamReader = new StreamReader(responseStream))
-						{
-							var result = JSON.Parse(streamReader.ReadToEnd());
-							return result["success"].AsBool;
-						}
-					}
-				}
+				request.BeginGetRequestStream(new AsyncCallback(WriteCallback), state);
 			}
 			catch(Exception e)
 			{
 				EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, "Consulo is not accessible at http://localhost:" + PluginConstants.ourPort + "/" + url + ", message: " + e.Message, "OK");
 			}
-			return true;
+		}
+
+		private static void WriteCallback(IAsyncResult asynchronousResult)
+		{
+			WebRequestState state = (WebRequestState) asynchronousResult.AsyncState;
+
+			using (Stream streamResponse = state.Request.EndGetRequestStream(asynchronousResult))
+			{
+				string jsonClassToString = state.Json.ToString();
+				byte[] bytes = Encoding.UTF8.GetBytes(jsonClassToString);
+
+				streamResponse.Write(bytes, 0, bytes.Length);
+			}
 		}
 	}
 }
