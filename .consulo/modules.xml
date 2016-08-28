@@ -12,6 +12,7 @@
           <content url="file://$MODULE_DIR$" />
           <orderEntry type="sourceFolder" />
           <orderEntry type="dot-net-library" name="System" />
+          <orderEntry type="dot-net-library" name="System.Core" />
           <orderEntry type="dot-net-library" name="mscorlib" />
           <orderEntry type="module-library">
             <library>
@@ -36,6 +37,7 @@
           <content url="file://$MODULE_DIR$" />
           <orderEntry type="sourceFolder" />
           <orderEntry type="dot-net-library" name="System" />
+          <orderEntry type="dot-net-library" name="System.Core" />
           <orderEntry type="dot-net-library" name="mscorlib" />
           <orderEntry type="module-library">
             <library>
@@ -60,8 +62,9 @@
           </extension>
           <content url="file://$MODULE_DIR$" />
           <orderEntry type="sourceFolder" />
-          <orderEntry type="dot-net-library" name="System" />
           <orderEntry type="dot-net-library" name="mscorlib" />
+          <orderEntry type="dot-net-library" name="System" />
+          <orderEntry type="dot-net-library" name="System.Core" />
           <orderEntry type="module-library">
             <library>
               <binaries>

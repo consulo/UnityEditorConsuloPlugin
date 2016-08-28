@@ -76,7 +76,7 @@ namespace MustBe.Consulo.Internal
 		}
 #endif
 
-		static bool UseConsulo()
+		internal static bool UseConsulo()
 		{
 			if(!EditorPrefs.HasKey(PluginConstants.ourEditorPrefsKey))
 			{

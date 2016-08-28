@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using UnityEditor;
+using UnityEngine;
 
 namespace MustBe.Consulo.Internal
 {
@@ -98,6 +99,19 @@ namespace MustBe.Consulo.Internal
 						}
 						code = HttpStatusCode.OK;
 						break;
+					case "/unityRequestDefines":
+					{
+						jsonClass = ReadJSONClass(context);
+						if(jsonClass != null)
+						{
+							resultValue = true;
+							uuid = jsonClass["uuid"].Value;
+							SendSetDefinesToConsulo(uuid);
+						}
+
+						code = HttpStatusCode.OK;
+						break;
+					}
 					case "/unityOpenScene":
 						jsonClass = ReadJSONClass(context);
 						string fileValue = jsonClass == null ? null : jsonClass["file"].Value;
@@ -222,6 +236,36 @@ namespace MustBe.Consulo.Internal
 				}
 			}
 			return null;
+		}
+
+		public static void SendSetDefinesToConsulo(string uuid)
+		{
+			UnityUtil.RunInMainThread(() =>
+			{
+				if(!ConsuloIntegration.UseConsulo())
+				{
+					return;
+				}
+
+				string projectPath = Path.GetDirectoryName(Application.dataPath);
+				projectPath = projectPath.Replace('\\', '/');
+
+				JSONClass result = new JSONClass();
+				result.Add("projectPath", projectPath);
+				if(uuid != null)
+				{
+					result.Add("uuid", uuid);
+				}
+				JSONArray array = new JSONArray();
+				foreach (string define in EditorUserBuildSettings.activeScriptCompilationDefines)
+				{
+					array.Add(define);
+				}
+
+				result.Add("defines", array);
+
+				ConsuloIntegration.SendToConsulo("unitySetDefines", result);
+			});
 		}
 	}
 }

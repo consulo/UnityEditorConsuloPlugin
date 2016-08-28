@@ -35,13 +35,19 @@ namespace MustBe.Consulo.Internal
 
 			HTTPServer httpServer = new HTTPServer(unityConsuloPluginPort);
 
+			Action action = () => HTTPServer.SendSetDefinesToConsulo(null);
+
 			UnityUtil.RunInMainThread(() =>
 			{
 				AppDomain.CurrentDomain.DomainUnload += (sender, e) =>
 				{
+					EditorUserBuildSettings.activeBuildTargetChanged -= action;
+
 					httpServer.Stop();
 				};
 			});
+
+			EditorUserBuildSettings.activeBuildTargetChanged += action;
 
 			Application.RegisterLogCallback((condition, stackTrace, type) =>
 			{

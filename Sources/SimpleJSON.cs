@@ -53,10 +53,11 @@ namespace MustBe.Consulo.Internal
 
 	public class JSONNode
 	{
-        #region common interface
-        public virtual void Add(string aKey, JSONNode aItem)
-	{
-	}
+		#region common interface
+		public virtual void Add(string aKey, JSONNode aItem)
+		{
+		}
+
 		public virtual JSONNode this[int aIndex]
 		{
 			get
