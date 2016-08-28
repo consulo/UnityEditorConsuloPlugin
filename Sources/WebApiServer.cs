@@ -87,5 +87,19 @@ namespace MustBe.Consulo.Internal
 				ConsuloIntegration.SendToConsulo("unityPlayState", jsonClass);
 			};
 		}
+
+        [UnityEditor.Callbacks.DidReloadScripts]
+        public static void UpdateScriptingDefines() {
+            string[] defines = EditorUserBuildSettings.activeScriptCompilationDefines;
+
+            var joined = string.Join(";", defines);
+
+            JSONClass jsonClass = new JSONClass();
+
+            jsonClass.Add("defines", new JSONData(joined));
+            jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
+
+            ConsuloIntegration.SendToConsulo("unityScriptingDefines", jsonClass);
+        }
 	}
 }

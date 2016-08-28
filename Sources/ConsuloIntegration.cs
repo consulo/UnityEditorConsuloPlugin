@@ -32,6 +32,12 @@ namespace MustBe.Consulo.Internal
 	{
 		private static readonly List<string> ourSupportedContentTypes = new List<string>(new string[]{"UnityEditor.MonoScript", "UnityEngine.Shader"});
 
+        [MenuItem("Edit/Send Scripting Defines to Consulo")]
+        static void UpdateScriptingDefines()
+        {
+            WebApiServer.UpdateScriptingDefines();
+        }
+
 #if UNITY_BEFORE_5
 
 		[MenuItem("Edit/Use Consulo as External Editor", true)]
