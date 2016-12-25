@@ -11,3 +11,7 @@ And then copy it to **Assets/Editor/Plugins** directory.
 And enable in **Unity Editor** via menu **Edit/Use Consulo as External Editor**
 
 Required last Consulo & Unity plugin builds
+
+# Note
+
+This plugin works with Consulo **1.0** only
