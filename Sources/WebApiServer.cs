@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 must-be.org
+ * Copyright 2013-2016 consulo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace MustBe.Consulo.Internal
+namespace Consulo.Internal.UnityEditor
 {
 	[InitializeOnLoad]
 	public class WebApiServer

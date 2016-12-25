@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 must-be.org
+ * Copyright 2013-2016 consulo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ using System.Threading;
 using UnityEditor;
 using UnityEngine;
 
-namespace MustBe.Consulo.Internal
+namespace Consulo.Internal.UnityEditor
 {
 	internal class HTTPServer
 	{
@@ -51,7 +51,7 @@ namespace MustBe.Consulo.Internal
 		private void Listen()
 		{
 			myListener = new HttpListener();
-			myListener.Prefixes.Add($"http://*:{myPort.ToString()}/");
+			myListener.Prefixes.Add($"http://*:{myPort}/");
 			myListener.Start();
 			while(!myStopped)
 			{

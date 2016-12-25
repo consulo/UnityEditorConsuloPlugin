@@ -38,7 +38,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace MustBe.Consulo.Internal
+namespace Consulo.Internal.UnityEditor
 {
 	public enum JSONBinaryTag
 	{
