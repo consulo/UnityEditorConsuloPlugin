@@ -16,9 +16,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -31,60 +34,22 @@ namespace Consulo.Internal.UnityEditor
 	public class ConsuloIntegration
 	{
 		private static readonly List<string> ourSupportedContentTypes = new List<string>(new string[]{"UnityEditor.MonoScript", "UnityEngine.Shader"});
+		private static bool ourInProgress;
+		private static int ourTimeout = 1000;
 
-#if UNITY_BEFORE_5
-
-		[MenuItem("Edit/Use Consulo as External Editor", true)]
-		static bool UseConsuloAsExternalEditorValidator()
+		private static string EditorScriptApp
 		{
-			return !UseConsulo();
+			get
+			{
+				return EditorPrefs.GetString("kScriptsDefaultApp");
+			}
 		}
-
-		[MenuItem("Edit/Disable Consulo as External Editor", true)]
-		static bool DisableConsuloAsExternalEditorValidator()
-		{
-			return UseConsulo();
-		}
-
-		[MenuItem("Edit/Use Consulo as External Editor")]
-		static void UseConsuloAsExternalEditor()
-		{
-			EditorPrefs.SetBool(PluginConstants.ourEditorPrefsKey, true);
-		}
-
-		[MenuItem("Edit/Disable Consulo as External Editor")]
-		static void DisableConsuloAsExternalEditor()
-		{
-			EditorPrefs.SetBool(PluginConstants.ourEditorPrefsKey, false);
-		}
-
-#else
-
-		[MenuItem("Edit/Use Consulo as External Editor", true)]
-		static bool ValidateUncheckConsulo()
-		{
-			Menu.SetChecked("Edit/Use Consulo as External Editor", UseConsulo());
-			return true;
-		}
-
-		[MenuItem("Edit/Use Consulo as External Editor")]
-		static void UncheckConsulo()
-		{
-			var state = UseConsulo();
-			Menu.SetChecked("Edit/Use Consulo as External Editor", !state);
-			EditorPrefs.SetBool(PluginConstants.ourEditorPrefsKey, !state);
-		}
-#endif
 
 		internal static bool UseConsulo()
 		{
-			if(!EditorPrefs.HasKey(PluginConstants.ourEditorPrefsKey))
-			{
-				EditorPrefs.SetBool(PluginConstants.ourEditorPrefsKey, false);
-				return false;
-			}
-
-			return EditorPrefs.GetBool(PluginConstants.ourEditorPrefsKey);
+			string scriptApp = EditorScriptApp;
+			// ignore case
+			return !string.IsNullOrEmpty(scriptApp) && scriptApp.IndexOf("consulo", StringComparison.OrdinalIgnoreCase) != -1;
 		}
 
 		[OnOpenAsset]
@@ -114,36 +79,71 @@ namespace Consulo.Internal.UnityEditor
 			jsonClass.Add("contentType", new JSONData(selected.GetType().ToString()));
 			jsonClass.Add("line", new JSONData(line));
 
-			SendToConsulo("unityOpenFile", jsonClass);
+			SendToConsulo("unityOpenFile", jsonClass, true);
 			return true;
 		}
 
-		public static void SendToConsulo(string url, JSONClass jsonClass)
+		/// <summary>
+		/// Send request to consulo.
+		/// </summary>
+		/// <param name="url"></param>
+		/// <param name="jsonClass"></param>
+		/// <param name="start">Only true if user double click on file</param>
+		public static void SendToConsulo(string url, JSONClass jsonClass, bool start = false)
 		{
 			if(!UseConsulo())
 			{
 				return;
 			}
 
+			if(ourInProgress)
+			{
+				return;
+			}
+
 			try
 			{
-				WebRequest request = WebRequest.Create("http://localhost:" + PluginConstants.ourPort + "/api/" + url);
-				request.Timeout = 10000;
-				request.Method = "POST";
-				request.ContentType = "application/json; charset=utf-8";
+				ourInProgress = true;
 
-				WebRequestState state = new WebRequestState
+				if(IsConsuloStarted())
 				{
-					Request = request,
-					Json = jsonClass
-				};
-
-				request.BeginGetRequestStream(new AsyncCallback(WriteCallback), state);
+					try
+					{
+						SendRequestToConsulo(url, jsonClass);
+					}
+					catch(Exception e)
+					{
+						EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, "Consulo is not accessible at http://localhost:" + PluginConstants.ourPort + "/" + url + ", message: " + e.Message, "OK");
+					}
+				}
+				else
+				{
+					if(start)
+					{
+						StartConsulo(url, jsonClass);
+					}
+				}
 			}
-			catch(Exception e)
+			finally
 			{
-				EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, "Consulo is not accessible at http://localhost:" + PluginConstants.ourPort + "/" + url + ", message: " + e.Message, "OK");
+				ourInProgress = false;
 			}
+		}
+
+		private static IAsyncResult SendRequestToConsulo(string url, JSONClass jsonClass)
+		{
+			WebRequest request = WebRequest.Create("http://localhost:" + PluginConstants.ourPort + "/api/" + url);
+			request.Timeout = ourTimeout;
+			request.Method = "POST";
+			request.ContentType = "application/json; charset=utf-8";
+
+			WebRequestState state = new WebRequestState
+			{
+				Request = request,
+				Json = jsonClass.ToString(),
+			};
+
+			return request.BeginGetRequestStream(new AsyncCallback(WriteCallback), state);
 		}
 
 		private static void WriteCallback(IAsyncResult asynchronousResult)
@@ -152,11 +152,84 @@ namespace Consulo.Internal.UnityEditor
 
 			using (Stream streamResponse = state.Request.EndGetRequestStream(asynchronousResult))
 			{
-				string jsonClassToString = state.Json.ToString();
-				byte[] bytes = Encoding.UTF8.GetBytes(jsonClassToString);
+				byte[] bytes = Encoding.UTF8.GetBytes(state.Json);
 
 				streamResponse.Write(bytes, 0, bytes.Length);
 			}
+
+			state.Finished = true;
+		}
+
+		private static bool IsConsuloStarted()
+		{
+			try
+			{
+				using(Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+				{
+					sock.ReceiveTimeout = 100;
+					sock.SendTimeout = 100;
+					sock.Blocking = true;
+
+					sock.Connect("localhost", PluginConstants.ourPort);
+					if(sock.Connected)
+					{
+						return true;
+					}
+				}
+			}
+			catch
+			{
+			}
+			return false;
+		}
+
+		private static void StartConsulo(string url, JSONClass jsonClass)
+		{
+			Process process = new Process();
+			string scriptApp = EditorScriptApp;
+
+			if(new FileInfo(scriptApp).Extension == ".app")
+			{
+				process.StartInfo.FileName = "open";
+				process.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + scriptApp, "--no-recent-projects");
+			}
+			else
+			{
+				process.StartInfo.FileName = scriptApp;
+				process.StartInfo.Arguments = "--no-recent-projects";
+				process.StartInfo.WorkingDirectory = Directory.GetParent(scriptApp).FullName;
+			}
+
+			process.StartInfo.UseShellExecute = false;
+			process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+			process.StartInfo.CreateNoWindow = true;
+			process.StartInfo.RedirectStandardOutput = true;
+			process.Start();
+
+
+			Thread thread = new Thread(() =>
+			{
+				for(int i = 0; i < 60; i++)
+				{
+					if(!IsConsuloStarted())
+					{
+						Thread.Sleep(500);
+						continue;
+					}
+
+					try
+					{
+						SendRequestToConsulo(url, jsonClass);
+						break;
+					}
+					catch
+					{
+						Thread.Sleep(500);
+					}
+				}
+			});
+			thread.Name = "Sending request to Consulo";
+			thread.Start();
 		}
 	}
 }

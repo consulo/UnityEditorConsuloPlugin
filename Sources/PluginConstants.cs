@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-using System;
-
 namespace Consulo.Internal.UnityEditor
 {
 	internal class PluginConstants
 	{
 		internal const string ourDialogTitle = "Consulo Plugin";
-		internal const string ourEditorPrefsKey = "UseConsuloAsExternalEditor";
 		internal const int ourPort = 62242;
 		//internal const int ourPort = 55333; // dev port
 	}

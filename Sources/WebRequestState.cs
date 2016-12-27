@@ -18,9 +18,10 @@ using System.Net;
 
 namespace Consulo.Internal.UnityEditor
 {
-	internal struct WebRequestState
+	internal class WebRequestState
 	{
 		internal WebRequest Request;
-		internal JSONClass Json;
+		internal string Json;
+		internal bool Finished;
 	}
 }
