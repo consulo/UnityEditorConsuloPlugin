@@ -8,6 +8,6 @@ First of all you need choose correct plugin library:
 
 And then copy it to **Assets/Editor/Plugins** directory.
 
-And enable in **Unity Editor** via menu **Edit/Use Consulo as External Editor**
+And just set in **External Script Editor** in **Unity Editor** 
 
 Required last Consulo & Unity plugin builds
