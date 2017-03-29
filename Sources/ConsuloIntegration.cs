@@ -26,8 +26,7 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-namespace Consulo.Internal.UnityEditor
-{
+namespace Consulo.Internal.UnityEditor {
 	/// <summary>
 	/// UnityEditor.Menu class is not exists in Unity 4.6 we need add some hack
 	/// </summary>
@@ -37,8 +36,11 @@ namespace Consulo.Internal.UnityEditor
 		private static bool ourInProgress;
 		private static int ourTimeout = 1000;
 
-		private static string EditorScriptApp
-		{
+		private static int ourLastCheckCacheTime = 5000;
+		private static int ourLastCheck = -1;
+		private static bool ourLastCheckResult;
+
+		private static string EditorScriptApp {
 			get
 			{
 				return EditorPrefs.GetString("kScriptsDefaultApp");
@@ -105,7 +107,7 @@ namespace Consulo.Internal.UnityEditor
 			{
 				ourInProgress = true;
 
-				if(IsConsuloStarted())
+				if(IsConsuloStarted(!start))
 				{
 					try
 					{
@@ -160,11 +162,25 @@ namespace Consulo.Internal.UnityEditor
 			state.Finished = true;
 		}
 
-		private static bool IsConsuloStarted()
+		private static bool IsConsuloStarted(bool useTimeCheck = false)
 		{
+			int tickCount = Environment.TickCount;
+
+			if(useTimeCheck)
+			{
+				if(ourLastCheck > 0 && (tickCount - ourLastCheck) < ourLastCheckCacheTime)
+				{
+					return ourLastCheckResult;
+				}
+
+				ourLastCheck = tickCount;
+			}
+
+			ourLastCheckResult = false;
+
 			try
 			{
-				using(Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+				using (Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
 				{
 					sock.ReceiveTimeout = 100;
 					sock.SendTimeout = 100;
@@ -173,7 +189,7 @@ namespace Consulo.Internal.UnityEditor
 					sock.Connect("localhost", PluginConstants.ourPort);
 					if(sock.Connected)
 					{
-						return true;
+						return ourLastCheckResult = true;
 					}
 				}
 			}
