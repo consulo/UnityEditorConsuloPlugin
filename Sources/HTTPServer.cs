@@ -126,7 +126,7 @@ namespace Consulo.Internal.UnityEditor
 						}
 						code = HttpStatusCode.OK;
 						break;
-					#if NUNIT
+#if NUNIT
 					case "/unityRunTest":
 						jsonClass = ReadJSONClass(context);
 						if(jsonClass != null)
@@ -148,7 +148,7 @@ namespace Consulo.Internal.UnityEditor
 						}
 						code = HttpStatusCode.OK;
 						break;
-					#endif
+#endif
 					default:
 						UnityUtil.RunInMainThread(() =>
 						{
@@ -220,7 +220,7 @@ namespace Consulo.Internal.UnityEditor
 
 			TestExecutionContext.CurrentContext.TestPackage = null;
 		}
-		#endif
+#endif
 
 		private static JSONClass ReadJSONClass(HttpListenerContext context)
 		{
