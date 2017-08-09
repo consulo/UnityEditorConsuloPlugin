@@ -14,12 +14,89 @@
  * limitations under the License.
  */
 
-#if NUNIT
+#if UNITY_5_6
+using NUnit.Framework.Interfaces;
+using UnityEngine;
+#elif NUNIT
 using NUnit.Core;
 using System;
+#endif
 
+#if NUNIT
 namespace Consulo.Internal.UnityEditor
 {
+	#if UNITY_5_6
+	public class NUnitTestListener : ITestListener
+	{
+		private string myUUID;
+		private string myRootName;
+
+		public NUnitTestListener(string uuid)
+		{
+			myUUID = uuid;
+		}
+
+		public void TestStarted(NUnit.Framework.Interfaces.ITest test)
+		{
+			Debug.Log(test.Name);
+			WebApiServer.ourCurrentTestName = test.Name;
+
+			JSONClass jsonClass = new JSONClass();
+			jsonClass.Add("name", test.Name);
+			jsonClass.Add("uuid", myUUID);
+			jsonClass.Add("type", "TestStarted");
+
+
+			ConsuloIntegration.SendToConsulo("unityTestState", jsonClass);
+		}
+
+		public void TestFinished(NUnit.Framework.Interfaces.ITestResult result)
+		{
+			JSONClass jsonClass = new JSONClass();
+			jsonClass.Add("name", result.Name);
+			jsonClass.Add("uuid", myUUID);
+			string typeText;
+			if(result.ResultState == ResultState.Ignored)
+			{
+				typeText = "TestIgnored";
+			}
+			else if(result.ResultState == ResultState.Success)
+			{
+				typeText = "TestFinished";
+			}
+			else
+			{
+				typeText = "TestFailed";
+			}
+
+			jsonClass.Add("type", typeText);
+			string message = result.Message;
+			if(message != null)
+			{
+				jsonClass.Add("message", message);
+			}
+			string trace = result.StackTrace;
+			if(trace != null)
+			{
+				jsonClass.Add("stackTrace", trace);
+			}
+			jsonClass.Add("time", result.Duration.ToString());
+
+			ConsuloIntegration.SendToConsulo("unityTestState", jsonClass);
+		}
+
+		public void TestOutput(NUnit.Framework.Interfaces.TestOutput output)
+		{
+			JSONClass jsonClass = new JSONClass();
+			jsonClass.Add("name", "Info");
+			jsonClass.Add("uuid", myUUID);
+			jsonClass.Add("type", "TestOutput");
+			jsonClass.Add("message", output.Text);
+
+			ConsuloIntegration.SendToConsulo("unityTestState", jsonClass);
+		}
+	}
+	#else
 	public class NUnitTestListener : EventListener
 	{
 		private string myUUID;
@@ -140,5 +217,6 @@ namespace Consulo.Internal.UnityEditor
 			//
 		}
 	}
+	#endif
 }
 #endif

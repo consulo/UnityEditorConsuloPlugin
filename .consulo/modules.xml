@@ -2,7 +2,7 @@
 <project>
   <component name="ModuleManager">
     <modules>
-      <module name="UnityEditorConsuloPlugin" dirurl="file://$PROJECT_DIR$" current-layer="unity5.3">
+      <module name="UnityEditorConsuloPlugin" dirurl="file://$PROJECT_DIR$" current-layer="unity5.6">
         <module-layer name="unity4.6">
           <extension id="mono-csharp" unsafe-code="false" language-version-name="_6_0" optimize-code="false" platform="ANY_CPU" />
           <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$4.6.$TargetFileExt$" output-dir="Build" namespace-prefix="">
@@ -97,6 +97,43 @@
             <library>
               <binaries>
                 <root url="netdll://$MODULE_DIR$/Dependencies/NUnit/nunit.framework.dll!/" />
+              </binaries>
+            </library>
+          </orderEntry>
+        </module-layer>
+        <module-layer name="unity5.6">
+          <extension id="mono-csharp" unsafe-code="false" language-version-name="_6_0" optimize-code="false" platform="ANY_CPU" />
+          <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$5.6.$TargetFileExt$" output-dir="Build" namespace-prefix="">
+            <define>DEBUG</define>
+            <define>UNITY_5_6</define>
+            <define>NUNIT</define>
+          </extension>
+          <content url="file://$MODULE_DIR$" />
+          <orderEntry type="sourceFolder" />
+          <orderEntry type="dot-net-library" name="mscorlib" />
+          <orderEntry type="dot-net-library" name="System" />
+          <orderEntry type="dot-net-library" name="System.Core" />
+          <orderEntry type="module-library">
+            <library>
+              <binaries>
+                <root url="netdll://$MODULE_DIR$/Dependencies/Unity5.6+/UnityEngine.dll!/" />
+              </binaries>
+              <documentation>
+                <root url="file://$MODULE_DIR$/Dependencies/Unity5.6+/UnityEngine.xml" />
+              </documentation>
+            </library>
+          </orderEntry>
+          <orderEntry type="module-library">
+            <library>
+              <binaries>
+                <root url="netdll://$MODULE_DIR$/Dependencies/Unity5.6+/UnityEditor.dll!/" />
+              </binaries>
+            </library>
+          </orderEntry>
+          <orderEntry type="module-library">
+            <library>
+              <binaries>
+                <root url="netdll://$MODULE_DIR$/Dependencies/Unity5.6+/nunit.framework.dll!/" />
               </binaries>
             </library>
           </orderEntry>

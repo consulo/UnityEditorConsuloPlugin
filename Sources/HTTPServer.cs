@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-#if NUNIT
+#if UNITY_5_6
+using NUnit.Framework.Api;
+#elif NUNIT
 using NUnit.Core;
 #endif
 using System;
@@ -24,6 +26,9 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 using UnityEditor;
 using UnityEngine;
 
@@ -184,6 +189,37 @@ namespace Consulo.Internal.UnityEditor
 #if NUNIT
 		private static void RunNUnitTests(string type, string uuid)
 		{
+			#if UNITY_5_6
+			/*Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+			List<Assembly> loadAssemblies = new List<Assembly>();
+			foreach (Assembly t in assemblies)
+			{
+				string fullName = t.FullName;
+				if(fullName.Contains("Assembly-CSharp-Editor") || fullName.Contains("Assembly-UnityScript-Editor"))
+				{
+					loadAssemblies.Add(t);
+				}
+			}
+
+			NUnitTestAssemblyRunner runner = new NUnitTestAssemblyRunner(new DefaultTestAssemblyBuilder());
+
+			foreach (Assembly assembly in loadAssemblies)
+			{
+				ITest test = runner.Load(assembly, new Dictionary<string, object>());
+				if(test == null)
+				{
+					continue;
+				}
+
+				WebApiServer.ourCurrentTestUUID = uuid;
+
+				runner.Run(new NUnitTestListener(uuid), TestFilter.Empty);
+
+				WebApiServer.ourCurrentTestUUID = null;
+				WebApiServer.ourCurrentTestName = null;
+			} */
+
+			#else
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			List<string> assemblyLocations = new List<string>();
 			foreach (Assembly t in assemblies)
@@ -219,6 +255,7 @@ namespace Consulo.Internal.UnityEditor
 			WebApiServer.ourCurrentTestName = null;
 
 			TestExecutionContext.CurrentContext.TestPackage = null;
+			#endif
 		}
 #endif
 
