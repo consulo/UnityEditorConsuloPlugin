@@ -47,6 +47,28 @@ namespace Consulo.Internal.UnityEditor {
 			}
 		}
 
+		#if UNITY_5_6
+		[MenuItem("Help/Consulo Integration", true)]
+		static bool ValidateConsuloPlugin()
+		{
+			Menu.SetChecked("Help/Consulo Integration", UseConsulo());
+			return true;
+		}
+
+		[MenuItem("Help/Consulo Integration")]
+		static void ClickConsuloPlugin()
+		{
+			if(UseConsulo())
+			{
+				EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, "For disabling Consulo integration - reset 'External Editor'", "OK");
+			}
+			else
+			{
+				EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, "For enabling Consulo integration - set Consulo as 'External Editor'", "OK");
+			}
+		}
+		#endif
+
 		internal static bool UseConsulo()
 		{
 			string scriptApp = EditorScriptApp;

@@ -18,7 +18,9 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if UNITY_5_6
+#if UNITY_2017_2
+[assembly: AssemblyTitle("UnityEditorConsuloPlugin2017.2")]
+#elif UNITY_5_6
 [assembly: AssemblyTitle("UnityEditorConsuloPlugin5.6")]
 #elif NUNIT
 [assembly: AssemblyTitle("UnityEditorConsuloPlugin5.3")]
@@ -32,7 +34,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 
-#if UNITY_5_6
+#if UNITY_2017_2
+[assembly: AssemblyProduct("UnityEditorConsuloPlugin2017.2")]
+#elif UNITY_5_6
 [assembly: AssemblyProduct("UnityEditorConsuloPlugin5.6")]
 #elif NUNIT
 [assembly: AssemblyProduct("UnityEditorConsuloPlugin5.3")]

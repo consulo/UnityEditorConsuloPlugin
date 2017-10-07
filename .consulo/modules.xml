@@ -2,7 +2,29 @@
 <project>
   <component name="ModuleManager">
     <modules>
-      <module name="UnityEditorConsuloPlugin" dirurl="file://$PROJECT_DIR$" current-layer="unity5.6">
+      <module name="UnityEditorConsuloPlugin" dirurl="file://$PROJECT_DIR$" current-layer="unity2017.2+">
+        <module-layer name="unity2017.2+">
+          <extension id="mono-csharp" unsafe-code="false" language-version-name="_6_0" optimize-code="false" platform="ANY_CPU" />
+          <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$2017.2.$TargetFileExt$" output-dir="Build" namespace-prefix="">
+            <define>DEBUG</define>
+            <define>UNITY_5_6</define>
+            <define>NUNIT</define>
+            <define>UNITY_2017_2</define>
+          </extension>
+          <content url="file://$MODULE_DIR$" />
+          <orderEntry type="sourceFolder" />
+          <orderEntry type="dot-net-library" name="mscorlib" />
+          <orderEntry type="dot-net-library" name="System" />
+          <orderEntry type="dot-net-library" name="System.Core" />
+          <orderEntry type="module-library">
+            <library>
+              <binaries>
+                <root url="file://$MODULE_DIR$/Dependencies/Unity2017.2+" />
+              </binaries>
+              <jarDirectory url="file://$MODULE_DIR$/Dependencies/Unity2017.2+" recursive="false" />
+            </library>
+          </orderEntry>
+        </module-layer>
         <module-layer name="unity4.6">
           <extension id="mono-csharp" unsafe-code="false" language-version-name="_6_0" optimize-code="false" platform="ANY_CPU" />
           <extension id="mono-dotnet" sdk-module-name="" sdk-name="Mono 2.0" target="LIBRARY" debug="true" allow-source-roots="false" file-name="$ModuleName$4.6.$TargetFileExt$" output-dir="Build" namespace-prefix="">
