@@ -26,7 +26,8 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-namespace Consulo.Internal.UnityEditor {
+namespace Consulo.Internal.UnityEditor
+{
 	/// <summary>
 	/// UnityEditor.Menu class is not exists in Unity 4.6 we need add some hack
 	/// </summary>
