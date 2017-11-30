@@ -82,6 +82,9 @@ namespace Consulo.Internal.UnityEditor
 		{
 			if(!UseConsulo())
 			{
+				#if ACTION_DEBUG
+				UnityEngine.Debug.Log("UseConsulo() = false");
+				#endif
 				return false;
 			}
 
@@ -89,6 +92,9 @@ namespace Consulo.Internal.UnityEditor
 			string contentType = selected.GetType().ToString();
 			if(!ourSupportedContentTypes.Contains(contentType))
 			{
+				#if ACTION_DEBUG
+				UnityEngine.Debug.Log($"Not supported type {contentType}");
+				#endif
 				return false;
 			}
 
@@ -116,6 +122,10 @@ namespace Consulo.Internal.UnityEditor
 		/// <param name="start">Only true if user double click on file</param>
 		public static void SendToConsulo(string url, JSONClass jsonClass, bool start = false)
 		{
+			#if ACTION_DEBUG
+			UnityEngine.Debug.Log($"Sending json to consulo {jsonClass}");
+			#endif
+
 			if(!UseConsulo())
 			{
 				return;
