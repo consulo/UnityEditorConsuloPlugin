@@ -35,6 +35,9 @@ namespace Consulo.Internal.UnityEditor
 
 			HTTPServer httpServer = new HTTPServer(unityConsuloPluginPort);
 
+			#if ACTION_DEBUG
+			UnityEngine.Debug.Log("Binding port: " + unityConsuloPluginPort);
+			#endif
 			Action action = () => HTTPServer.SendSetDefinesToConsulo(null);
 
 			UnityUtil.RunInMainThread(() =>

@@ -10,6 +10,7 @@
             <define>UNITY_5_6</define>
             <define>NUNIT</define>
             <define>UNITY_2017_2</define>
+            <define>ACTION_DEBUG</define>
           </extension>
           <content url="file://$MODULE_DIR$" />
           <orderEntry type="sourceFolder" />
