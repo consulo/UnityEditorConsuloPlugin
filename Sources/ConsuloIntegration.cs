@@ -165,7 +165,34 @@ namespace Consulo.Internal.UnityEditor
 			}
 		}
 
-		private static IAsyncResult SendRequestToConsulo(string url, JSONClass jsonClass)
+		#if UNITY_2017_2
+		private static void SendRequestToConsulo(string url, JSONClass jsonClass)
+		{
+			System.Collections.IEnumerator e = SendRequestToConsuloImpl(url, jsonClass);
+			while(e.MoveNext())
+			{
+			}
+		}
+
+		private static System.Collections.IEnumerator SendRequestToConsuloImpl(string url, JSONClass jsonClass)
+		{
+			string fullUrl = "http://localhost:" + PluginConstants.ourPort + "/api/" + url;
+
+			UnityEngine.Networking.UnityWebRequest post = new UnityEngine.Networking.UnityWebRequest(fullUrl, UnityEngine.Networking.UnityWebRequest.kHttpVerbPOST);
+			byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonClass.ToString());
+			post.uploadHandler = new UnityEngine.Networking.UploadHandlerRaw(jsonToSend);
+			post.SetRequestHeader("Content-Type", "application/json");
+			post.timeout = ourTimeout;
+
+			yield return post.SendWebRequest();
+
+			if(post.isHttpError || post.isNetworkError)
+			{
+				throw new Exception(post.error);
+			}
+		}
+		#else
+		private static void SendRequestToConsulo(string url, JSONClass jsonClass)
 		{
 			WebRequest request = WebRequest.Create("http://localhost:" + PluginConstants.ourPort + "/api/" + url);
 			request.Timeout = ourTimeout;
@@ -178,7 +205,7 @@ namespace Consulo.Internal.UnityEditor
 				Json = jsonClass.ToString(),
 			};
 
-			return request.BeginGetRequestStream(new AsyncCallback(WriteCallback), state);
+			request.BeginGetRequestStream(new AsyncCallback(WriteCallback), state);
 		}
 
 		private static void WriteCallback(IAsyncResult asynchronousResult)
@@ -194,6 +221,7 @@ namespace Consulo.Internal.UnityEditor
 
 			state.Finished = true;
 		}
+		#endif
 
 		private static bool IsConsuloStarted(bool useTimeCheck = false)
 		{
