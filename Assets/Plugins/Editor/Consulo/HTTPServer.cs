@@ -56,7 +56,7 @@ namespace Consulo.Internal.UnityEditor
 		private void Listen()
 		{
 			myListener = new HttpListener();
-			myListener.Prefixes.Add($"http://*:{myPort}/");
+			myListener.Prefixes.Add("http://*:" + myPort + "/");
 			myListener.Start();
 			while(!myStopped)
 			{
@@ -157,7 +157,7 @@ namespace Consulo.Internal.UnityEditor
 					default:
 						UnityUtil.RunInMainThread(() =>
 						{
-							EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, $"Unknown how handle API url {pathAndQuery}, please update UnityEditor plugin for Consulo", "OK");
+							EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, "Unknown how handle API url " + pathAndQuery + ", please update UnityEditor plugin for Consulo", "OK");
 						});
 						code = HttpStatusCode.InternalServerError;
 						break;
