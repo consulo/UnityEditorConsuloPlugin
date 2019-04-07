@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma warning disable
 
 #if UNITY_5_6
 using NUnit.Framework.Api;

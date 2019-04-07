@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma warning disable
 
 using System;
 using System.Collections.Generic;
@@ -49,14 +50,29 @@ namespace Consulo.Internal.UnityEditor
 		}
 
 		#if UNITY_5_6_OR_NEWER
-		[MenuItem("Help/Consulo Integration", true)]
-		static bool ValidateConsuloPlugin()
+		[MenuItem("Consulo/Socket searching", true)]
+		static bool EnableSocketSearching()
 		{
-			Menu.SetChecked("Help/Consulo Integration", UseConsulo());
+			bool value = EditorPrefs.GetBool(PluginConstants.ourSocketSearchingKey, PluginConstants.ourSocketSearchingValue);
+			Menu.SetChecked("Consulo/Socket searching", value);
 			return true;
 		}
 
-		[MenuItem("Help/Consulo Integration")]
+		[MenuItem("Consulo/Socket searching")]
+		static void ClickEnableSocketSearching()
+		{
+			bool oldValue = EditorPrefs.GetBool(PluginConstants.ourSocketSearchingKey, PluginConstants.ourSocketSearchingValue);
+			EditorPrefs.SetBool(PluginConstants.ourSocketSearchingKey, !oldValue);
+		}
+
+		[MenuItem("Consulo/Integration", true)]
+		static bool ValidateConsuloPlugin()
+		{
+			Menu.SetChecked("Consulo/Integration", UseConsulo());
+			return true;
+		}
+
+		[MenuItem("Consulo/Integration")]
 		static void ClickConsuloPlugin()
 		{
 			if(UseConsulo())
@@ -82,7 +98,7 @@ namespace Consulo.Internal.UnityEditor
 		{
 			if(!UseConsulo())
 			{
-				if(UnityUtil.isDebugEnabled())
+				if(UnityUtil.IsDebugEnabled())
 				{
 					UnityEngine.Debug.Log("UseConsulo() = false");
 				}
@@ -93,7 +109,7 @@ namespace Consulo.Internal.UnityEditor
 			string contentType = selected.GetType().ToString();
 			if(!ourSupportedContentTypes.Contains(contentType))
 			{
-				if(UnityUtil.isDebugEnabled())
+				if(UnityUtil.IsDebugEnabled())
 				{
 					UnityEngine.Debug.Log("Not supported type " + contentType);
 				}
@@ -124,7 +140,7 @@ namespace Consulo.Internal.UnityEditor
 		/// <param name="start">Only true if user double click on file</param>
 		public static void SendToConsulo(string url, JSONClass jsonClass, bool start = false)
 		{
-			if(UnityUtil.isDebugEnabled())
+			if(UnityUtil.IsDebugEnabled())
 			{
 				UnityEngine.Debug.Log("Sending json to consulo " + jsonClass);
 			}
@@ -244,22 +260,34 @@ namespace Consulo.Internal.UnityEditor
 
 			try
 			{
-				using (Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+				Process[] processes = Process.GetProcesses();
+				foreach (Process process in processes)
 				{
-					sock.ReceiveTimeout = 100;
-					sock.SendTimeout = 100;
-					sock.Blocking = true;
-
-					sock.Connect("localhost", PluginConstants.ourPort);
-					if(sock.Connected)
+					string processName = process.ProcessName.ToLowerInvariant();
+					if(processName.Contains("consulo"))
 					{
 						return ourLastCheckResult = true;
+					}
+				}
+
+				if (UnityUtil.IsSocketSearchingEnabled())
+				{
+					using (Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+					{
+						sock.ReceiveTimeout = 100;
+						sock.SendTimeout = 100;
+						sock.Blocking = true;
+
+						sock.Connect("localhost", PluginConstants.ourPort);
+						if(sock.Connected)
+						{
+							return ourLastCheckResult = true;
+						}
 					}
 				}
 			}
 			catch(Exception e)
 			{
-				UnityEngine.Debug.LogException(e);
 			}
 			return false;
 		}

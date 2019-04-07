@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma warning disable
 
 using System;
 using System.Diagnostics;
@@ -35,7 +36,7 @@ namespace Consulo.Internal.UnityEditor
 
 			HTTPServer httpServer = new HTTPServer(unityConsuloPluginPort);
 
-			if (UnityUtil.isDebugEnabled())
+			if (UnityUtil.IsDebugEnabled())
 			{
 				UnityEngine.Debug.Log("Binding port: " + unityConsuloPluginPort);
 			}

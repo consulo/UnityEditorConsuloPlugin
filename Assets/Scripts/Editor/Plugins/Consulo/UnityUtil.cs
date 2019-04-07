@@ -32,13 +32,21 @@ namespace Consulo.Internal.UnityEditor
 			EditorApplication.update = (EditorApplication.CallbackFunction)Delegate.Combine(EditorApplication.update, callback);
 		}
 
-		internal static bool isDebugEnabled()
+		internal static bool IsDebugEnabled()
 		{
 #if CONSULO_ACTION_DEBUG
 			return true;
 #else
 			return false;
 #endif
+		}
+
+		internal static bool IsSocketSearchingEnabled()
+		{
+#if CONSULO_DISABLE_SOCKET_SEARCHING
+			return false;
+#endif
+			return EditorPrefs.GetBool(PluginConstants.ourSocketSearchingKey, PluginConstants.ourSocketSearchingValue);
 		}
 	}
 }
