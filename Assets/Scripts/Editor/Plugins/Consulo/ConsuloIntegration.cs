@@ -254,8 +254,9 @@ namespace Consulo.Internal.UnityEditor
 					}
 				}
 			}
-			catch
+			catch(Exception e)
 			{
+				UnityEngine.Debug.LogException(e);
 			}
 			return false;
 		}

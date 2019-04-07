@@ -26,9 +26,11 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+#if NUNIT
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+#endif
 using UnityEditor;
 using UnityEngine;
 
@@ -186,78 +188,78 @@ namespace Consulo.Internal.UnityEditor
 			myListenThread.Start();
 		}
 
-#if NUNIT
-		private static void RunNUnitTests(string type, string uuid)
-		{
-			#if UNITY_5_6
-			/*Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-			List<Assembly> loadAssemblies = new List<Assembly>();
-			foreach (Assembly t in assemblies)
-			{
-				string fullName = t.FullName;
-				if(fullName.Contains("Assembly-CSharp-Editor") || fullName.Contains("Assembly-UnityScript-Editor"))
-				{
-					loadAssemblies.Add(t);
-				}
-			}
-
-			NUnitTestAssemblyRunner runner = new NUnitTestAssemblyRunner(new DefaultTestAssemblyBuilder());
-
-			foreach (Assembly assembly in loadAssemblies)
-			{
-				ITest test = runner.Load(assembly, new Dictionary<string, object>());
-				if(test == null)
-				{
-					continue;
-				}
-
-				WebApiServer.ourCurrentTestUUID = uuid;
-
-				runner.Run(new NUnitTestListener(uuid), TestFilter.Empty);
-
-				WebApiServer.ourCurrentTestUUID = null;
-				WebApiServer.ourCurrentTestName = null;
-			} */
-
-			#else
-			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-			List<string> assemblyLocations = new List<string>();
-			foreach (Assembly t in assemblies)
-			{
-				string fullName = t.FullName;
-				if(fullName.Contains("Assembly-CSharp-Editor") || fullName.Contains("Assembly-UnityScript-Editor"))
-				{
-					assemblyLocations.Add(t.Location);
-				}
-			}
-
-			CoreExtensions.Host.InitializeService(); // need initialize service
-
-			TestPackage testPackage = new TestPackage(PlayerSettings.productName, assemblyLocations);
-
-			TestExecutionContext.CurrentContext.TestPackage = testPackage;
-
-			TestSuiteBuilder builder = new TestSuiteBuilder();
-
-			TestSuite testSuite = builder.Build(testPackage);
-
-			if(testSuite == null)
-			{
-				EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, "Suite is null", "OK");
-				return;
-			}
-
-			WebApiServer.ourCurrentTestUUID = uuid;
-
-			testSuite.Run(new NUnitTestListener(uuid), TestFilter.Empty);
-
-			WebApiServer.ourCurrentTestUUID = null;
-			WebApiServer.ourCurrentTestName = null;
-
-			TestExecutionContext.CurrentContext.TestPackage = null;
-			#endif
-		}
-#endif
+//#if NUNIT
+//		private static void RunNUnitTests(string type, string uuid)
+//		{
+//			#if UNITY_5_6
+//			/*Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+//			List<Assembly> loadAssemblies = new List<Assembly>();
+//			foreach (Assembly t in assemblies)
+//			{
+//				string fullName = t.FullName;
+//				if(fullName.Contains("Assembly-CSharp-Editor") || fullName.Contains("Assembly-UnityScript-Editor"))
+//				{
+//					loadAssemblies.Add(t);
+//				}
+//			}
+//
+//			NUnitTestAssemblyRunner runner = new NUnitTestAssemblyRunner(new DefaultTestAssemblyBuilder());
+//
+//			foreach (Assembly assembly in loadAssemblies)
+//			{
+//				ITest test = runner.Load(assembly, new Dictionary<string, object>());
+//				if(test == null)
+//				{
+//					continue;
+//				}
+//
+//				WebApiServer.ourCurrentTestUUID = uuid;
+//
+//				runner.Run(new NUnitTestListener(uuid), TestFilter.Empty);
+//
+//				WebApiServer.ourCurrentTestUUID = null;
+//				WebApiServer.ourCurrentTestName = null;
+//			} */
+//
+//			#else
+//			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+//			List<string> assemblyLocations = new List<string>();
+//			foreach (Assembly t in assemblies)
+//			{
+//				string fullName = t.FullName;
+//				if(fullName.Contains("Assembly-CSharp-Editor") || fullName.Contains("Assembly-UnityScript-Editor"))
+//				{
+//					assemblyLocations.Add(t.Location);
+//				}
+//			}
+//
+//			CoreExtensions.Host.InitializeService(); // need initialize service
+//
+//			TestPackage testPackage = new TestPackage(PlayerSettings.productName, assemblyLocations);
+//
+//			TestExecutionContext.CurrentContext.TestPackage = testPackage;
+//
+//			TestSuiteBuilder builder = new TestSuiteBuilder();
+//
+//			TestSuite testSuite = builder.Build(testPackage);
+//
+//			if(testSuite == null)
+//			{
+//				EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, "Suite is null", "OK");
+//				return;
+//			}
+//
+//			WebApiServer.ourCurrentTestUUID = uuid;
+//
+//			testSuite.Run(new NUnitTestListener(uuid), TestFilter.Empty);
+//
+//			WebApiServer.ourCurrentTestUUID = null;
+//			WebApiServer.ourCurrentTestName = null;
+//
+//			TestExecutionContext.CurrentContext.TestPackage = null;
+//			#endif
+//		}
+//#endif
 
 		private static JSONClass ReadJSONClass(HttpListenerContext context)
 		{
