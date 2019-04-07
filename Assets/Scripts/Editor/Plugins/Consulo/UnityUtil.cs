@@ -31,5 +31,14 @@ namespace Consulo.Internal.UnityEditor
 			};
 			EditorApplication.update = (EditorApplication.CallbackFunction)Delegate.Combine(EditorApplication.update, callback);
 		}
+
+		internal static bool isDebugEnabled()
+		{
+#if CONSULO_ACTION_DEBUG
+			return true;
+#else
+			return false;
+#endif
+		}
 	}
 }

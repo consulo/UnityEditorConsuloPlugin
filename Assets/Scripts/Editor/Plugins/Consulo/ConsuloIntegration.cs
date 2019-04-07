@@ -48,7 +48,7 @@ namespace Consulo.Internal.UnityEditor
 			}
 		}
 
-		#if UNITY_5_6
+		#if UNITY_5_6_OR_NEWER
 		[MenuItem("Help/Consulo Integration", true)]
 		static bool ValidateConsuloPlugin()
 		{
@@ -82,9 +82,10 @@ namespace Consulo.Internal.UnityEditor
 		{
 			if(!UseConsulo())
 			{
-				#if ACTION_DEBUG
-				UnityEngine.Debug.Log("UseConsulo() = false");
-				#endif
+				if(UnityUtil.isDebugEnabled())
+				{
+					UnityEngine.Debug.Log("UseConsulo() = false");
+				}
 				return false;
 			}
 
@@ -92,9 +93,10 @@ namespace Consulo.Internal.UnityEditor
 			string contentType = selected.GetType().ToString();
 			if(!ourSupportedContentTypes.Contains(contentType))
 			{
-				#if ACTION_DEBUG
-				UnityEngine.Debug.Log($"Not supported type {contentType}");
-				#endif
+				if(UnityUtil.isDebugEnabled())
+				{
+					UnityEngine.Debug.Log("Not supported type " + contentType);
+				}
 				return false;
 			}
 
@@ -122,9 +124,10 @@ namespace Consulo.Internal.UnityEditor
 		/// <param name="start">Only true if user double click on file</param>
 		public static void SendToConsulo(string url, JSONClass jsonClass, bool start = false)
 		{
-			#if ACTION_DEBUG
-			UnityEngine.Debug.Log($"Sending json to consulo {jsonClass}");
-			#endif
+			if(UnityUtil.isDebugEnabled())
+			{
+				UnityEngine.Debug.Log("Sending json to consulo " + jsonClass);
+			}
 
 			if(!UseConsulo())
 			{
@@ -165,7 +168,7 @@ namespace Consulo.Internal.UnityEditor
 			}
 		}
 
-		#if UNITY_2017_2
+		#if UNITY_2017_2_OR_NEWER
 		private static void SendRequestToConsulo(string url, JSONClass jsonClass)
 		{
 			System.Collections.IEnumerator e = SendRequestToConsuloImpl(url, jsonClass);
