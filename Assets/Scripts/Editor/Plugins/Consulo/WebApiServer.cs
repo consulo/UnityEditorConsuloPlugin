@@ -64,7 +64,7 @@ namespace Consulo.Internal.UnityEditor
 					jsonClass.Add("name", ourCurrentTestName);
 					jsonClass.Add("uuid", testUUID);
 					jsonClass.Add("type", "TestOutput");
-					jsonClass.Add("message", condition);
+					jsonClass.Add("message", cutTooLogMessage(condition));
 					jsonClass.Add("stackTrace", stackTrace);
 					jsonClass.Add("messageType", Enum.GetName(typeof(LogType), type));
 
@@ -74,7 +74,7 @@ namespace Consulo.Internal.UnityEditor
 				{
 					JSONClass jsonClass = new JSONClass();
 
-					jsonClass.Add("condition", condition);
+					jsonClass.Add("condition", cutTooLogMessage(condition));
 					jsonClass.Add("stackTrace", stackTrace);
 					jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
 					jsonClass.Add("type", Enum.GetName(typeof(LogType), type));
@@ -92,6 +92,16 @@ namespace Consulo.Internal.UnityEditor
 
 				ConsuloIntegration.SendToConsulo("unityPlayState", jsonClass);
 			};
+		}
+
+		private static string cutTooLogMessage(string message)
+		{
+			if (message.Length > 255)
+			{
+				return message.Substring(0, 255) + " (message extend 255 chars was cut)";
+			}
+
+			return message;
 		}
 	}
 }
