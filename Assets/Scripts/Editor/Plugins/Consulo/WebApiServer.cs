@@ -29,8 +29,12 @@ namespace Consulo.Internal.UnityEditor
 		public static string ourCurrentTestUUID;
 		public static string ourCurrentTestName;
 
+		private static string ourDataPath;
+
 		static WebApiServer()
 		{
+			ourDataPath = Path.GetDirectoryName(Application.dataPath);
+
 			Process currentProcess = Process.GetCurrentProcess();
 			int unityConsuloPluginPort = 56000 + currentProcess.Id % 1000 + 2000; // 56000 + 2000
 
@@ -76,7 +80,7 @@ namespace Consulo.Internal.UnityEditor
 
 					jsonClass.Add("condition", cutTooLogMessage(condition));
 					jsonClass.Add("stackTrace", stackTrace);
-					jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
+					jsonClass.Add("projectPath", ourDataPath);
 					jsonClass.Add("type", Enum.GetName(typeof(LogType), type));
 
 					ConsuloIntegration.SendToConsulo("unityLog", jsonClass);
@@ -88,7 +92,7 @@ namespace Consulo.Internal.UnityEditor
 				JSONClass jsonClass = new JSONClass();
 
 				jsonClass.Add("isPlaying", new JSONData(EditorApplication.isPlaying));
-				jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
+				jsonClass.Add("projectPath", ourDataPath);
 
 				ConsuloIntegration.SendToConsulo("unityPlayState", jsonClass);
 			};
