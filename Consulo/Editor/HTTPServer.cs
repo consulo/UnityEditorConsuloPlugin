@@ -34,6 +34,7 @@ using NUnit.Framework.Internal;
 #endif
 using UnityEditor;
 using UnityEngine;
+using Consulo.Internal.UnityEditor;
 
 namespace Consulo.Internal.UnityEditor
 {

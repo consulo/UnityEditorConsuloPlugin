@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using Consulo.Internal.UnityEditor;
 
 namespace Consulo.Internal.UnityEditor
 {

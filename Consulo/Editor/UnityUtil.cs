@@ -16,6 +16,7 @@
 
 using System;
 using UnityEditor;
+using Consulo.Internal.UnityEditor;
 
 namespace Consulo.Internal.UnityEditor
 {

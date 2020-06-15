@@ -16,6 +16,7 @@
 #pragma warning disable
 
 using System.Net;
+using Consulo.Internal.UnityEditor;
 
 namespace Consulo.Internal.UnityEditor
 {

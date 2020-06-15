@@ -26,6 +26,7 @@ using System.Threading;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
+using Consulo.Internal.UnityEditor;
 
 namespace Consulo.Internal.UnityEditor
 {
