@@ -1,0 +1,8 @@
+{
+  "name": "consulo.unity.editor.plugin",
+  "displayName": "UnityEditor Consulo Plugin",
+  "version": "1.0.0",
+  "description": "Plugin for UnityEditor add some usefull actions for Consulo",
+  "author": "https://consulo.io",
+  "license": "Apache 2"
+}
