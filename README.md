@@ -4,13 +4,13 @@ Need add package to package list in `manifest.json`
 
 > Packages/manifest.json
 
-## Before 2019.3
+## Before 2019.3 (due certificate problem - use http protocol)
 ```json
 {
   "scopedRegistries": [
     {
       "name": "Main",
-      "url": "https://maven.consulo.io/repository/unity",
+      "url": "http://upm.consulo.io/",
       "scopes": [
         "com.consulo"
       ]
@@ -29,7 +29,7 @@ Need add package to package list in `manifest.json`
   "scopedRegistries": [
     {
       "name": "Main",
-      "url": "https://maven.consulo.io/repository/unity",
+      "url": "https://upm.consulo.io/",
       "scopes": [
         "com.consulo"
       ]
