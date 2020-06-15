@@ -1,16 +1,10 @@
 {
-  "name": "consulo.unity.editor.plugin",
+  "name": "com.consulo.ide",
   "displayName": "UnityEditor Consulo Plugin",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Plugin for UnityEditor add some usefull actions for Consulo",
   "author": "https://consulo.io",
   "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/consulo/UnityEditorConsuloPlugin.git"
-  },
-  "bugs": {
-    "url": "https://github.com/consulo/UnityEditorConsuloPlugin/issues"
-  },
-  "homepage": "https://github.com/consulo/UnityEditorConsuloPlugin#readme"
+  "unity": "2019.2",
+  "unityRelease": "0a12"
 }
