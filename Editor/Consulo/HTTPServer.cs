@@ -103,7 +103,7 @@ namespace Consulo.Internal.UnityEditor
 
 								JSONClass result = new JSONClass();
 								result.Add("uuid", uuid);
-								ConsuloIntegration.SendToConsulo("unityRefreshResponse", result);
+								WebApiServer.Push("unityRefreshResponse", result);
 							});
 						}
 						code = HttpStatusCode.OK;
@@ -116,6 +116,25 @@ namespace Consulo.Internal.UnityEditor
 							resultValue = true;
 							uuid = jsonClass["uuid"].Value;
 							SendSetDefinesToConsulo(uuid);
+						}
+
+						code = HttpStatusCode.OK;
+						break;
+					}
+					case "/unityDebuggerAttach":
+					{
+						jsonClass = ReadJSONClass(context);
+						if (jsonClass != null)
+						{
+							resultValue = true;
+							uuid = jsonClass["uuid"].Value;
+							UnityUtil.RunInMainThread(() =>
+							{
+								JSONClass result = new JSONClass();
+								result.Add("uuid", uuid);
+								result.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
+								WebApiServer.Push("unityDebuggerAttachResponse", result);
+							});
 						}
 
 						code = HttpStatusCode.OK;
@@ -305,7 +324,7 @@ namespace Consulo.Internal.UnityEditor
 
 				result.Add("defines", array);
 
-				ConsuloIntegration.SendToConsulo("unitySetDefines", result);
+				WebApiServer.Push("unitySetDefines", result);
 			});
 		}
 	}

@@ -30,16 +30,16 @@ namespace Consulo.Internal.UnityEditor
 		public static string ourCurrentTestUUID;
 		public static string ourCurrentTestName;
 
-		private static string ourDataPath;
+		private static MessageSender ourMessageSender;
 
 		static WebApiServer()
 		{
-			ourDataPath = Path.GetDirectoryName(Application.dataPath);
-
 			Process currentProcess = Process.GetCurrentProcess();
 			int unityConsuloPluginPort = 56000 + currentProcess.Id % 1000 + 2000; // 56000 + 2000
 
 			HTTPServer httpServer = new HTTPServer(unityConsuloPluginPort);
+
+			ourMessageSender = new MessageSender();
 
 			if (UnityUtil.IsDebugEnabled())
 			{
@@ -54,6 +54,7 @@ namespace Consulo.Internal.UnityEditor
 				{
 					EditorUserBuildSettings.activeBuildTargetChanged -= action;
 
+					ourMessageSender.Stop();
 					httpServer.Stop();
 				};
 			});
@@ -62,6 +63,12 @@ namespace Consulo.Internal.UnityEditor
 
 			Application.RegisterLogCallback((condition, stackTrace, type) =>
 			{
+				// we can't use debug and log handler
+				if(UnityUtil.IsDebugEnabled())
+				{
+					return;
+				}
+
 				string testUUID = ourCurrentTestUUID;
 				if(testUUID != null)
 				{
@@ -73,7 +80,7 @@ namespace Consulo.Internal.UnityEditor
 					jsonClass.Add("stackTrace", stackTrace);
 					jsonClass.Add("messageType", Enum.GetName(typeof(LogType), type));
 
-					ConsuloIntegration.SendToConsulo("unityTestState", jsonClass);
+					Push("unityTestState", jsonClass);
 				}
 				else
 				{
@@ -81,10 +88,10 @@ namespace Consulo.Internal.UnityEditor
 
 					jsonClass.Add("condition", cutTooLogMessage(condition));
 					jsonClass.Add("stackTrace", stackTrace);
-					jsonClass.Add("projectPath", ourDataPath);
+					jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
 					jsonClass.Add("type", Enum.GetName(typeof(LogType), type));
 
-					ConsuloIntegration.SendToConsulo("unityLog", jsonClass);
+					Push("unityLog", jsonClass);
 				}
 			});
 
@@ -93,9 +100,9 @@ namespace Consulo.Internal.UnityEditor
 				JSONClass jsonClass = new JSONClass();
 
 				jsonClass.Add("isPlaying", new JSONData(EditorApplication.isPlaying));
-				jsonClass.Add("projectPath", ourDataPath);
+				jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
 
-				ConsuloIntegration.SendToConsulo("unityPlayState", jsonClass);
+				Push("unityPlayState", jsonClass);
 			};
 		}
 
@@ -107,6 +114,11 @@ namespace Consulo.Internal.UnityEditor
 			}
 
 			return message;
+		}
+
+		public static void Push(string url, JSONClass message)
+		{
+			ourMessageSender.Push(url, message);
 		}
 	}
 }
