@@ -1,15 +1,42 @@
 # How to use it?
 
-First of all you need choose correct plugin library:
+Need add package to package list in `manifest.json`
 
- * Unity 4.6 require **Build/UnityEditorConsuloPlugin4.6.dll**
- * Unity 5 require **Build/UnityEditorConsuloPlugin5.dll**
- * Unity 5.3 require **Build/UnityEditorConsuloPlugin5.3.dll**
- * Unity 5.6 (or highter) require **Build/UnityEditorConsuloPlugin5.6.dll**
- * Unity 2017.2 (or highter) require **Build/UnityEditorConsuloPlugin2017.2.dll**
+> Packages/manifest.json
 
-And then copy it to **Assets/Editor/Plugins** directory.
+## Before 2019.3 (due certificate problem - use http protocol)
+```json
+{
+  "scopedRegistries": [
+    {
+      "name": "Main",
+      "url": "http://upm.consulo.io/",
+      "scopes": [
+        "com.consulo"
+      ]
+    }
+  ],
+  "dependencies": {
+    "com.consulo.ide": "2.2.0"
+  }
+}
+```
 
-And just set in **External Script Editor** in **Unity Editor** 
+## After 2019.3
 
-Required last Consulo & Unity plugin builds
+```json
+{
+  "scopedRegistries": [
+    {
+      "name": "Main",
+      "url": "https://upm.consulo.io/",
+      "scopes": [
+        "com.consulo"
+      ]
+    }
+  ],
+  "dependencies": {
+    "com.consulo.ide": "2.2.0"
+  }
+}
+```
