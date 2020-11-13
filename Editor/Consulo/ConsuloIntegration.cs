@@ -42,6 +42,7 @@ namespace Consulo.Internal.UnityEditor
 		private static int ourLastCheckCacheTime = 5000;
 		private static int ourLastCheck = -1;
 		private static bool ourLastCheckResult;
+		private static int ourLastCheckedProcessId = -1;
 
 		private static string EditorScriptApp {
 			get
@@ -129,7 +130,7 @@ namespace Consulo.Internal.UnityEditor
 			jsonClass.Add("contentType", new JSONData(selected.GetType().ToString()));
 			jsonClass.Add("line", new JSONData(line));
 
-			SendToConsulo("unityOpenFile", jsonClass, true);
+			SendToConsulo("unityOpenFile", jsonClass, true, true);
 			return true;
 		}
 
@@ -138,8 +139,9 @@ namespace Consulo.Internal.UnityEditor
 		/// </summary>
 		/// <param name="url"></param>
 		/// <param name="jsonClass"></param>
+		/// <param name="focus">Focus app</param>
 		/// <param name="start">Only true if user double click on file</param>
-		public static void SendToConsulo(string url, JSONClass jsonClass, bool start = false)
+		public static void SendToConsulo(string url, JSONClass jsonClass, bool focus = false, bool start = false)
 		{
 			if(UnityUtil.IsDebugEnabled())
 			{
@@ -164,7 +166,7 @@ namespace Consulo.Internal.UnityEditor
 				{
 					try
 					{
-						SendRequestToConsulo(url, jsonClass);
+						SendRequestToConsulo(url, jsonClass, focus);
 					}
 					catch(Exception e)
 					{
@@ -175,7 +177,7 @@ namespace Consulo.Internal.UnityEditor
 				{
 					if(start)
 					{
-						StartConsulo(url, jsonClass);
+						StartConsulo(url, jsonClass, focus);
 					}
 				}
 			}
@@ -185,12 +187,24 @@ namespace Consulo.Internal.UnityEditor
 			}
 		}
 
-		#if UNITY_2017_2_OR_NEWER
-		private static void SendRequestToConsulo(string url, JSONClass jsonClass)
+		private static void SendRequestToConsulo(string url, JSONClass jsonClass, bool focus)
 		{
 			System.Collections.IEnumerator e = SendRequestToConsuloImpl(url, jsonClass);
 			while(e.MoveNext())
 			{
+			}
+
+			if(focus)
+			{
+				switch(UnityUtil.OSFamily)
+				{
+					case OSFamily.Windows:
+						if(ourLastCheckedProcessId != -1)
+						{
+							User32Dll.AllowSetForegroundWindow(ourLastCheckedProcessId);
+						}
+						break;
+				}
 			}
 		}
 
@@ -211,37 +225,6 @@ namespace Consulo.Internal.UnityEditor
 				throw new Exception(post.error);
 			}
 		}
-		#else
-		private static void SendRequestToConsulo(string url, JSONClass jsonClass)
-		{
-			WebRequest request = WebRequest.Create("http://localhost:" + PluginConstants.ourPort + "/api/" + url);
-			request.Timeout = ourTimeout;
-			request.Method = "POST";
-			request.ContentType = "application/json; charset=utf-8";
-
-			WebRequestState state = new WebRequestState
-			{
-				Request = request,
-				Json = jsonClass.ToString(),
-			};
-
-			request.BeginGetRequestStream(new AsyncCallback(WriteCallback), state);
-		}
-
-		private static void WriteCallback(IAsyncResult asynchronousResult)
-		{
-			WebRequestState state = (WebRequestState) asynchronousResult.AsyncState;
-
-			using (Stream streamResponse = state.Request.EndGetRequestStream(asynchronousResult))
-			{
-				byte[] bytes = Encoding.UTF8.GetBytes(state.Json);
-
-				streamResponse.Write(bytes, 0, bytes.Length);
-			}
-
-			state.Finished = true;
-		}
-		#endif
 
 		private static bool IsConsuloStarted(bool useTimeCheck = false)
 		{
@@ -257,6 +240,7 @@ namespace Consulo.Internal.UnityEditor
 				ourLastCheck = tickCount;
 			}
 
+			ourLastCheckedProcessId = -1;
 			ourLastCheckResult = false;
 
 			try
@@ -267,6 +251,8 @@ namespace Consulo.Internal.UnityEditor
 					string processName = process.ProcessName.ToLowerInvariant();
 					if(processName.Contains("consulo"))
 					{
+						ourLastCheckedProcessId = process.Id;
+
 						return ourLastCheckResult = true;
 					}
 				}
@@ -293,7 +279,7 @@ namespace Consulo.Internal.UnityEditor
 			return false;
 		}
 
-		private static void StartConsulo(string url, JSONClass jsonClass)
+		private static void StartConsulo(string url, JSONClass jsonClass, bool focus)
 		{
 			Process process = new Process();
 			string scriptApp = EditorScriptApp;
@@ -329,7 +315,7 @@ namespace Consulo.Internal.UnityEditor
 
 					try
 					{
-						SendRequestToConsulo(url, jsonClass);
+						SendRequestToConsulo(url, jsonClass, focus);
 						break;
 					}
 					catch

@@ -22,6 +22,21 @@ namespace Consulo.Internal.UnityEditor
 {
 	internal class UnityUtil
 	{
+		internal static OSFamily OSFamily = FindOSFamily();
+
+		private static OSFamily FindOSFamily()
+		{
+			var os = Environment.OSVersion;
+
+			if(os.VersionString.Contains("Windows"))
+			{
+				return OSFamily.Windows;
+			}
+
+			// TODO [VISTALL] macOS/Linux check need?
+			return OSFamily.Other;
+		}
+
 		internal static void RunInMainThread(Action action)
 		{
 			EditorApplication.CallbackFunction callback = null;

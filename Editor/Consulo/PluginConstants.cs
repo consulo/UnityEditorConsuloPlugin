@@ -22,7 +22,7 @@ namespace Consulo.Internal.UnityEditor
 	{
 		internal const string ourDialogTitle = "Consulo Plugin";
 		internal const string ourSocketSearchingKey = "consuloEnableSocketSearching";
-		internal const bool ourSocketSearchingValue = true;
+		internal const bool ourSocketSearchingValue = false;
 		internal const int ourPort = 62242;
 		//internal const int ourPort = 55333; // dev port
 	}
