@@ -9,7 +9,7 @@ Need add package to package list in `manifest.json`
 {
   "scopedRegistries": [
     {
-      "name": "Main",
+      "name": "consulo.io",
       "url": "http://upm.consulo.io/",
       "scopes": [
         "com.consulo"
@@ -28,7 +28,7 @@ Need add package to package list in `manifest.json`
 {
   "scopedRegistries": [
     {
-      "name": "Main",
+      "name": "consulo.io",
       "url": "https://upm.consulo.io/",
       "scopes": [
         "com.consulo"
