@@ -281,18 +281,26 @@ namespace Consulo.Internal.UnityEditor
 
 		private static void StartConsulo(string url, JSONClass jsonClass, bool focus)
 		{
+			JSONClass apiCall = new JSONClass();
+			apiCall.Add("url", "/api/" + url);
+			apiCall.Add("body", jsonClass);
+
+			string jsonFilePath = Path.GetTempPath() + Guid.NewGuid().ToString() + ".json";
+
+			File.WriteAllText(jsonFilePath, apiCall.ToString());
+
 			Process process = new Process();
 			string scriptApp = EditorScriptApp;
 
 			if(new FileInfo(scriptApp).Extension == ".app")
 			{
 				process.StartInfo.FileName = "open";
-				process.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + scriptApp, "--no-recent-projects");
+				process.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + scriptApp, "--no-recent-projects --json " + jsonFilePath);
 			}
 			else
 			{
 				process.StartInfo.FileName = scriptApp;
-				process.StartInfo.Arguments = "--no-recent-projects";
+				process.StartInfo.Arguments = "--no-recent-projects --json " + jsonFilePath;
 				process.StartInfo.WorkingDirectory = Directory.GetParent(scriptApp).FullName;
 			}
 
@@ -301,31 +309,6 @@ namespace Consulo.Internal.UnityEditor
 			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.RedirectStandardOutput = true;
 			process.Start();
-
-
-			Thread thread = new Thread(() =>
-			{
-				for(int i = 0; i < 60; i++)
-				{
-					if(!IsConsuloStarted())
-					{
-						Thread.Sleep(500);
-						continue;
-					}
-
-					try
-					{
-						SendRequestToConsulo(url, jsonClass, focus);
-						break;
-					}
-					catch
-					{
-						Thread.Sleep(500);
-					}
-				}
-			});
-			thread.Name = "Sending request to Consulo";
-			thread.Start();
 		}
 	}
 }
