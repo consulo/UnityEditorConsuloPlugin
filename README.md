@@ -43,7 +43,7 @@ Need add package to package list in `manifest.json`
 
 ## For advanced users
 
-Can use as git repository. but be careful, master is dev branch
+Package can use be used as git repository - but be careful, master is dev branch.
 
 ```json
   "dependencies": {
