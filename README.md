@@ -40,3 +40,13 @@ Need add package to package list in `manifest.json`
   }
 }
 ```
+
+## For advanced users
+
+Can use as git repository. but be careful, master is dev branch
+
+```json
+  "dependencies": {
+    "com.consulo.ide": "https://github.com/consulo/UnityEditorConsuloPlugin.git"
+  }
+```
