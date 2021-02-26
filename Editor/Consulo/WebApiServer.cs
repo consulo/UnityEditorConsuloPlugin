@@ -20,7 +20,6 @@ using System.Diagnostics;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using Consulo.Internal.UnityEditor;
 
 namespace Consulo.Internal.UnityEditor
 {
@@ -29,6 +28,8 @@ namespace Consulo.Internal.UnityEditor
 	{
 		public static string ourCurrentTestUUID;
 		public static string ourCurrentTestName;
+
+		private static string ourDataPath;
 
 		private static MessageSender ourMessageSender;
 
@@ -50,6 +51,8 @@ namespace Consulo.Internal.UnityEditor
 
 			UnityUtil.RunInMainThread(() =>
 			{
+				ourDataPath = Application.dataPath;
+
 				AppDomain.CurrentDomain.DomainUnload += (sender, e) =>
 				{
 					EditorUserBuildSettings.activeBuildTargetChanged -= action;
@@ -64,7 +67,7 @@ namespace Consulo.Internal.UnityEditor
 			Application.RegisterLogCallback((condition, stackTrace, type) =>
 			{
 				// we can't use debug and log handler
-				if(UnityUtil.IsDebugEnabled())
+				if(UnityUtil.IsDebugEnabled() || ourDataPath == null)
 				{
 					return;
 				}
@@ -88,7 +91,7 @@ namespace Consulo.Internal.UnityEditor
 
 					jsonClass.Add("condition", cutTooLogMessage(condition));
 					jsonClass.Add("stackTrace", stackTrace);
-					jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
+					jsonClass.Add("projectPath", Path.GetDirectoryName(ourDataPath));
 					jsonClass.Add("type", Enum.GetName(typeof(LogType), type));
 
 					Push("unityLog", jsonClass);
@@ -100,7 +103,7 @@ namespace Consulo.Internal.UnityEditor
 				JSONClass jsonClass = new JSONClass();
 
 				jsonClass.Add("isPlaying", new JSONData(EditorApplication.isPlaying));
-				jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
+				jsonClass.Add("projectPath", Path.GetDirectoryName(ourDataPath));
 
 				Push("unityPlayState", jsonClass);
 			};
