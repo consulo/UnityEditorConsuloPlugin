@@ -29,12 +29,17 @@ namespace Consulo.Internal.UnityEditor
 		public static string ourCurrentTestUUID;
 		public static string ourCurrentTestName;
 
-		private static string ourDataPath;
+		private static string ourDataPathForLogging;
 
 		private static MessageSender ourMessageSender;
 
 		static WebApiServer()
 		{
+			if(Application.isBatchMode)
+			{
+				return;
+			}
+
 			Process currentProcess = Process.GetCurrentProcess();
 			int unityConsuloPluginPort = 56000 + currentProcess.Id % 1000 + 2000; // 56000 + 2000
 
@@ -51,7 +56,7 @@ namespace Consulo.Internal.UnityEditor
 
 			UnityUtil.RunInMainThread(() =>
 			{
-				ourDataPath = Application.dataPath;
+				ourDataPathForLogging = Application.dataPath;
 
 				AppDomain.CurrentDomain.DomainUnload += (sender, e) =>
 				{
@@ -67,7 +72,7 @@ namespace Consulo.Internal.UnityEditor
 			Application.RegisterLogCallback((condition, stackTrace, type) =>
 			{
 				// we can't use debug and log handler
-				if(UnityUtil.IsDebugEnabled() || ourDataPath == null)
+				if(UnityUtil.IsDebugEnabled() || string.IsNullOrEmpty(ourDataPathForLogging))
 				{
 					return;
 				}
@@ -91,19 +96,19 @@ namespace Consulo.Internal.UnityEditor
 
 					jsonClass.Add("condition", cutTooLogMessage(condition));
 					jsonClass.Add("stackTrace", stackTrace);
-					jsonClass.Add("projectPath", Path.GetDirectoryName(ourDataPath));
+					jsonClass.Add("projectPath", Path.GetDirectoryName(ourDataPathForLogging));
 					jsonClass.Add("type", Enum.GetName(typeof(LogType), type));
 
 					Push("unityLog", jsonClass);
 				}
 			});
 
-			EditorApplication.playmodeStateChanged += delegate
+			EditorApplication.playmodeStateChanged += () =>
 			{
 				JSONClass jsonClass = new JSONClass();
 
 				jsonClass.Add("isPlaying", new JSONData(EditorApplication.isPlaying));
-				jsonClass.Add("projectPath", Path.GetDirectoryName(ourDataPath));
+				jsonClass.Add("projectPath", Path.GetDirectoryName(Application.dataPath));
 
 				Push("unityPlayState", jsonClass);
 			};
@@ -121,6 +126,11 @@ namespace Consulo.Internal.UnityEditor
 
 		public static void Push(string url, JSONClass message)
 		{
+			if(Application.isBatchMode)
+			{
+				return;
+			}
+
 			ourMessageSender.Push(url, message);
 		}
 	}

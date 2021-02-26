@@ -170,6 +170,7 @@ namespace Consulo.Internal.UnityEditor
 					}
 					catch(Exception e)
 					{
+						UnityEngine.Debug.LogError(e);
 						EditorUtility.DisplayDialog(PluginConstants.ourDialogTitle, "Consulo is not accessible at http://localhost:" + PluginConstants.ourPort + "/" + url + ", message: " + e.Message, "OK");
 					}
 				}
