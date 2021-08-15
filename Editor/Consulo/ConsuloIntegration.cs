@@ -249,32 +249,48 @@ namespace Consulo.Internal.UnityEditor
 				Process[] processes = Process.GetProcesses();
 				foreach (Process process in processes)
 				{
-					string processName = process.ProcessName.ToLowerInvariant();
-					if(processName.Contains("consulo"))
+					string processName = null;
+
+					try
+					{
+						// System.InvalidOperationException: Process has exited or is inaccessible, so the requested information is not available.
+						processName = process.ProcessName.ToLowerInvariant();
+					}
+					catch
+					{
+					}
+
+					if(processName != null && processName.Contains("consulo"))
 					{
 						ourLastCheckedProcessId = process.Id;
 
 						return ourLastCheckResult = true;
 					}
 				}
+			}
+			catch (Exception e)
+			{
+				UnityEngine.Debug.LogError(e);
+			}
 
+			try
+			{
 				if (UnityUtil.IsSocketSearchingEnabled())
 				{
-					using (Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
-					{
+					using (Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
 						sock.ReceiveTimeout = 100;
 						sock.SendTimeout = 100;
 						sock.Blocking = true;
 
 						sock.Connect("localhost", PluginConstants.ourPort);
-						if(sock.Connected)
+						if (sock.Connected)
 						{
 							return ourLastCheckResult = true;
 						}
 					}
 				}
 			}
-			catch(Exception e)
+			catch
 			{
 			}
 			return false;
