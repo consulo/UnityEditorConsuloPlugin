@@ -213,17 +213,19 @@ namespace Consulo.Internal.UnityEditor
 		{
 			string fullUrl = "http://localhost:" + PluginConstants.ourPort + "/api/" + url;
 
-			UnityEngine.Networking.UnityWebRequest post = new UnityEngine.Networking.UnityWebRequest(fullUrl, UnityEngine.Networking.UnityWebRequest.kHttpVerbPOST);
-			byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonClass.ToString());
-			post.uploadHandler = new UnityEngine.Networking.UploadHandlerRaw(jsonToSend);
-			post.SetRequestHeader("Content-Type", "application/json");
-			post.timeout = ourTimeout;
-
-			yield return post.SendWebRequest();
-
-			if(post.isHttpError || post.isNetworkError)
+			using(UnityEngine.Networking.UnityWebRequest post = new UnityEngine.Networking.UnityWebRequest(fullUrl, UnityEngine.Networking.UnityWebRequest.kHttpVerbPOST))
 			{
-				throw new Exception(post.error);
+				byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonClass.ToString());
+				post.uploadHandler = new UnityEngine.Networking.UploadHandlerRaw(jsonToSend);
+				post.SetRequestHeader("Content-Type", "application/json");
+				post.timeout = ourTimeout;
+
+				yield return post.SendWebRequest();
+
+				if (post.isHttpError || post.isNetworkError)
+				{
+					throw new Exception(post.error);
+				}
 			}
 		}
 
