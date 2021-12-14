@@ -34,7 +34,7 @@ using NUnit.Framework.Internal;
 #endif
 using UnityEditor;
 using UnityEngine;
-using Consulo.Internal.UnityEditor;
+using System.Net.Sockets;
 
 namespace Consulo.Internal.UnityEditor
 {
@@ -53,12 +53,31 @@ namespace Consulo.Internal.UnityEditor
 		public void Stop()
 		{
 			myStopped = true;
-			myListenThread.Abort();
-			myListener.Stop();
+			myListenThread?.Abort();
+			myListener?.Stop();
 		}
 
 		private void Listen()
 		{
+			int count = 0;
+			while(IsPortUsed())
+			{
+				if (myStopped)
+				{
+					return;
+				}
+
+				count ++;
+
+				if (count > 10)
+				{
+					UnityEngine.Debug.LogError(myPort + " used. Can't bind http api server");
+					return;
+				}
+				
+				Thread.Sleep(3000);
+			}
+
 			myListener = new HttpListener();
 			myListener.Prefixes.Add("http://*:" + myPort + "/");
 			myListener.Start();
@@ -72,6 +91,23 @@ namespace Consulo.Internal.UnityEditor
 				catch(Exception)
 				{
 				}
+			}
+		}
+
+		private bool IsPortUsed()
+		{
+			try
+			{
+				using (TcpClient ignored = new TcpClient("localhost", myPort))
+				{
+					// jus close it
+				}
+
+				return true;
+			}
+			catch
+			{
+				return false;
 			}
 		}
 
