@@ -190,43 +190,44 @@ namespace Consulo.Internal.UnityEditor
 
 		private static void SendRequestToConsulo(string url, JSONClass jsonClass, bool focus)
 		{
-			System.Collections.IEnumerator e = SendRequestToConsuloImpl(url, jsonClass);
-			while(e.MoveNext())
+			SendRequestToConsuloImpl(url, jsonClass, () =>
 			{
-			}
-
-			if(focus)
-			{
-				switch(UnityUtil.OSFamily)
+				if (focus)
 				{
-					case OSFamily.Windows:
-						if(ourLastCheckedProcessId != -1)
-						{
-							User32Dll.AllowSetForegroundWindow(ourLastCheckedProcessId);
-						}
-						break;
+					switch (UnityUtil.OSFamily) {
+						case OSFamily.Windows:
+							if (ourLastCheckedProcessId != -1)
+							{
+								User32Dll.AllowSetForegroundWindow(ourLastCheckedProcessId);
+							}
+							break;
+					}
 				}
-			}
+			});
 		}
 
-		private static System.Collections.IEnumerator SendRequestToConsuloImpl(string url, JSONClass jsonClass)
+		private static void SendRequestToConsuloImpl(string url, JSONClass jsonClass, Action onComplete)
 		{
 			string fullUrl = "http://localhost:" + PluginConstants.ourPort + "/api/" + url;
 
-			using(UnityEngine.Networking.UnityWebRequest post = new UnityEngine.Networking.UnityWebRequest(fullUrl, UnityEngine.Networking.UnityWebRequest.kHttpVerbPOST))
+			HttpWebRequest request = (HttpWebRequest) WebRequest.Create(fullUrl);
+			request.Method = "POST";
+			request.ReadWriteTimeout = 15_000;
+			request.Timeout = 15_000;
+			request.ContentType = "application/json";
+			using (var streamWriter = new StreamWriter(request.GetRequestStream()))
 			{
-				byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(jsonClass.ToString());
-				post.uploadHandler = new UnityEngine.Networking.UploadHandlerRaw(jsonToSend);
-				post.SetRequestHeader("Content-Type", "application/json");
-				post.timeout = ourTimeout;
+				string json = jsonClass.ToString();
 
-				yield return post.SendWebRequest();
-
-				if (post.isHttpError || post.isNetworkError)
-				{
-					throw new Exception(post.error);
-				}
+				streamWriter.Write(json);
 			}
+
+			using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())
+			{
+				// not interest
+			}
+
+			onComplete();
 		}
 
 		private static bool IsConsuloStarted(bool useTimeCheck = false)

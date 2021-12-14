@@ -53,7 +53,7 @@ namespace Consulo.Internal.UnityEditor
 #if CONSULO_ACTION_DEBUG
 			return true;
 #else
-			return false;
+			return true;
 #endif
 		}
 

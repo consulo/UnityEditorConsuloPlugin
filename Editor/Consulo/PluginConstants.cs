@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-using Consulo.Internal.UnityEditor;
-
 namespace Consulo.Internal.UnityEditor
 {
 	internal class PluginConstants
