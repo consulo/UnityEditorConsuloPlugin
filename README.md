@@ -21,3 +21,6 @@ Package can use be used as git repository - but be careful, master is dev branch
     "com.consulo.ide": "https://github.com/consulo/UnityEditorConsuloPlugin.git"
   }
 ```
+
+# Links
+  * [Help](https://consulo.help/plugins/consulo.unity3d/)
