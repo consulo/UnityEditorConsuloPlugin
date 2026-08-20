@@ -96,7 +96,11 @@ namespace Consulo.Internal.UnityEditor
 		}
 
 		[OnOpenAsset]
-		static bool OnOpenedAssetCallback(int instanceID, int line)
+#if UNITY_6000_3_OR_NEWER
+		static bool OnOpenedAssetCallback(UnityEngine.EntityId assetId, int line)
+#else
+		static bool OnOpenedAssetCallback(int assetId, int line)
+#endif
 		{
 			if(!UseConsulo())
 			{
@@ -107,7 +111,11 @@ namespace Consulo.Internal.UnityEditor
 				return false;
 			}
 
-			UnityEngine.Object selected = EditorUtility.InstanceIDToObject(instanceID);
+#if UNITY_6000_3_OR_NEWER
+			UnityEngine.Object selected = EditorUtility.EntityIdToObject(assetId);
+#else
+			UnityEngine.Object selected = EditorUtility.InstanceIDToObject(assetId);
+#endif
 			string contentType = selected.GetType().ToString();
 			if(!ourSupportedContentTypes.Contains(contentType))
 			{

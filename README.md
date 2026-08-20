@@ -7,7 +7,7 @@ Need add package to package list in `manifest.json`
 ```json
 {
   "dependencies": {
-    "com.consulo.ide": "https://github.com/consulo/UnityEditorConsuloPlugin.git#2.6.0"
+    "com.consulo.ide": "https://github.com/consulo/UnityEditorConsuloPlugin.git#2.9.0"
   }
 }
 ```
